@@ -5,6 +5,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { version as pkgVersion } from './package.json'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 process.env.VITE_APP_VERSION = pkgVersion
 if (process.env.NODE_ENV === 'production') {
@@ -29,9 +30,11 @@ export default defineConfig({
       eslintrc: {
         enabled: true,
       },
+      resolvers: [ElementPlusResolver()],
     }),
     Components({
       dts: 'components.d.ts',
+      resolvers: [ElementPlusResolver()],
     }),
   ],
   resolve: {

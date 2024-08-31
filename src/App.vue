@@ -22,6 +22,8 @@
     <div class="drawer-content">
       <router-view />
     </div>
+
+    <!-- side -->
     <div class="drawer-side border-r border-gray-600">
       <label for="drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <aside class="bg-base-100 min-h-screen w-96 flex flex-col items-end">

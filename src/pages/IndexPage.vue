@@ -1,8 +1,35 @@
 <script setup lang="ts">
   // const store = useStore()
+  const textarea1 = ref('')
 </script>
 <template>
-  <div class="p-4 mx-auto prose md:px-6 prose-indigo sm:rounded-md">
+  <div class="flex flex-col z-1 flex-grow w-1/2 h-full border-r border-gray-700">
+    <div
+      class="bg-base-500 text-base-content sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm border-b border-gray-700"
+    >
+      <nav class="navbar w-full p-0">
+        <div class="flex-1 h-full items-center justify-center hover:bg-gray-700">For you</div>
+        <div class="flex-1 h-full items-center justify-center hover:bg-gray-700">Following</div>
+      </nav>
+    </div>
+    <!-- content -->
+    <div>
+      <div class="flex flex-row z-0 w-full box-border px-4 border-b border-gray-700">
+        <!-- 头像 -->
+        <div class="h-full w-10 mr-2 bg-white"></div>
+        <div class="pt-1 flex justify-center flex-1 flex-col box-border">
+          <el-input
+            v-model="textarea1"
+            class="w-full"
+            :autosize="{ minRows: 2, maxRows: 99 }"
+            type="textarea"
+            placeholder="Please input"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="p-4 mx-auto prose md:px-6 prose-indigo sm:rounded-md">
     <HelloWorld msg="Hello World Component" />
 
     <h2>Template Project Features</h2>
@@ -130,5 +157,5 @@
       <a href="https://www.contributor-covenant.org/version/2/0/code_of_conduct/">the code of conduct</a>
       when interacting with others.
     </p>
-  </div>
+  </div> -->
 </template>
