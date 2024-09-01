@@ -1,5 +1,7 @@
 <script setup lang="ts">
-  // const store = useStore()
+  import { useUserStore } from '@/store/user'
+  import type { ElInput } from 'element-plus'
+  const userStore = useUserStore()
   const textarea1 = ref('')
 </script>
 <template>
@@ -14,17 +16,30 @@
     </div>
     <!-- content -->
     <div>
-      <div class="flex flex-row z-0 w-full box-border px-4 border-b border-gray-700">
+      <div class="flex flex-row z-0 w-full box-border px-4 pt-3 border-b border-gray-700">
         <!-- 头像 -->
-        <div class="h-full w-10 mr-2 bg-white"></div>
-        <div class="pt-1 flex justify-center flex-1 flex-col box-border">
+        <div class="h-full w-9 mr-2">
+          <div class="avatar">
+            <div class="w-10 rounded-full">
+              <img :src="userStore.userInfo.avatar" />
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center flex-1 flex-col box-border pt-1">
           <el-input
+            ref="inputRef"
             v-model="textarea1"
             class="w-full"
-            :autosize="{ minRows: 2, maxRows: 99 }"
+            :autosize="{ minRows: 1, maxRows: 99 }"
+            maxlength="255"
+            show-word-limit
+            true
             type="textarea"
-            placeholder="Please input"
+            placeholder="What is happening?!"
+            resize="none"
           />
+
+          <div class="w-full h-8 pb-2"></div>
         </div>
       </div>
     </div>

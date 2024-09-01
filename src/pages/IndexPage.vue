@@ -140,7 +140,7 @@
         <div class="w-56 px-2 h-16 mt-auto">
           <button class="btn rounded-3xl bg-base-100 h-14">
             <div class="avatar">
-              <div class="w-8 rounded-full">
+              <div class="w-10 rounded-full">
                 <img :src="userStore.userInfo.avatar" />
               </div>
             </div>
