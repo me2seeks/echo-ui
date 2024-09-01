@@ -1,10 +1,45 @@
 import service from '@/utils/request'
 
+interface LoginData {
+  email: string
+  password: string
+}
+
+interface RegisterData {
+  email: string
+  handle: string
+  nickname: string
+  password: string
+}
+
+interface UpdateData {
+  nickname?: string
+  sex?: number
+  avatar?: string
+  bio?: string
+}
+
+interface FollowData {
+  userID: number
+}
+
+interface UnfollowData {
+  userID: number
+}
+
+interface FollowersData {
+  userID: number
+}
+
+interface FollowingsData {
+  userID: number
+}
+
 // @Summary 用户登录
 // @Produce  application/json
 // @Param data body {email:"string",password:"string"}
 // @Router /user/login [post]
-export const login = (data: any) => {
+export const login = (data: LoginData) => {
   return service({
     url: '/user/login',
     method: 'post',
@@ -16,7 +51,7 @@ export const login = (data: any) => {
 // @Produce  application/json
 // @Param data body {email:"string",handle:"string",nickname:"string",password:"string"}
 // @Router /user/register [post]
-export const register = (data: any) => {
+export const register = (data: RegisterData) => {
   return service({
     url: '/user/register',
     method: 'post',
@@ -40,7 +75,7 @@ export const detail = () => {
 // @Security ApiKeyAuth
 // @Param data body {nickname:"string",sex:"int32",avatar:"string",bio:"string"}
 // @Router /user/ [post]
-export const update = (data: any) => {
+export const update = (data: UpdateData) => {
   return service({
     url: '/user/',
     method: 'post',
@@ -53,7 +88,7 @@ export const update = (data: any) => {
 // @Security ApiKeyAuth
 // @Param data body {userID:"int64"}
 // @Router /user/follow [post]
-export const follow = (data: any) => {
+export const follow = (data: FollowData) => {
   return service({
     url: '/user/follow',
     method: 'post',
@@ -66,7 +101,7 @@ export const follow = (data: any) => {
 // @Security ApiKeyAuth
 // @Param data body {userID:"int64"}
 // @Router /user/unfollow [post]
-export const unfollow = (data: any) => {
+export const unfollow = (data: UnfollowData) => {
   return service({
     url: '/user/unfollow',
     method: 'post',
@@ -79,7 +114,7 @@ export const unfollow = (data: any) => {
 // @Security ApiKeyAuth
 // @Param data body {userID:"int64"}
 // @Router /user/followers [post]
-export const followers = (data: any) => {
+export const followers = (data: FollowersData) => {
   return service({
     url: '/user/followers',
     method: 'post',
@@ -92,7 +127,7 @@ export const followers = (data: any) => {
 // @Security ApiKeyAuth
 // @Param data body {userID:"int64"}
 // @Router /user/followings [post]
-export const followings = (data: any) => {
+export const followings = (data: FollowingsData) => {
   return service({
     url: '/user/followings',
     method: 'post',
