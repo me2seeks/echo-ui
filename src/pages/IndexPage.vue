@@ -1,4 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import { useUserStore } from '@/store/user'
+  const userStore = useUserStore()
+</script>
 <template>
   <div class="bg-base-100 drawer lg:drawer-open">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
@@ -138,13 +141,13 @@
           <button class="btn rounded-3xl bg-base-100 h-14">
             <div class="avatar">
               <div class="w-8 rounded-full">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                <img :src="userStore.userInfo.avatar" />
               </div>
             </div>
             <div class="w-20">
               <div class="ml-2 text-sm font-bold items-start flex flex-col">
-                <div class="line-clamp-1">John Doe</div>
-                <div class="line-clamp-1 text-xs">@123</div>
+                <div class="line-clamp-1">{{ userStore.userInfo.nickname }}</div>
+                <div class="line-clamp-1 text-xs">@{{ userStore.userInfo.handle }}</div>
               </div>
             </div>
             <div class="w-8">

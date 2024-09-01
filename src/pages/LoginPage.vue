@@ -1,3 +1,21 @@
+<script setup lang="ts">
+  import { useUserStore } from '@/store/user'
+
+  const userStore = useUserStore()
+  const email = ref<string>('')
+  const password = ref<string>('')
+  const isSubmitting = ref<boolean>(false)
+  const submit = async () => {
+    try {
+      isSubmitting.value = true
+      await userStore.LoginIn({ email: email.value, password: password.value })
+    } catch (error) {
+      console.error('Login failed', error)
+    } finally {
+      isSubmitting.value = false
+    }
+  }
+</script>
 <template>
   <div class="hero bg-base-200 min-h-screen">
     <div class="hero-content flex-col lg:flex-row-reverse">
@@ -9,26 +27,29 @@
         </p>
       </div>
       <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-        <form class="card-body">
+        <div class="card-body">
           <div class="form-control">
             <label class="label">
               <span class="label-text">Email</span>
             </label>
-            <input type="email" placeholder="email" class="input input-bordered" required />
+            <input v-model="email" type="email" placeholder="email" class="input input-bordered" required />
           </div>
           <div class="form-control">
             <label class="label">
               <span class="label-text">Password</span>
             </label>
-            <input type="password" placeholder="password" class="input input-bordered" required />
+            <input v-model="password" type="password" placeholder="password" class="input input-bordered" required />
             <label class="label">
               <a href="#" class="label-text-alt link link-hover">Forgot password?</a>
             </label>
           </div>
           <div class="form-control mt-6">
-            <button class="btn btn-primary">Login</button>
+            <button class="btn btn-primary" @click="submit">
+              <span v-show="isSubmitting" class="loading loading-spinner"></span>
+              Login
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>

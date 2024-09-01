@@ -4,6 +4,7 @@ import { createApp, markRaw } from 'vue'
 import App from './App.vue'
 import './assets/index.postcss'
 import router from './router'
+import { useUserStore } from '@/store/user'
 
 const head = createHead()
 const app = createApp(App)
@@ -15,5 +16,7 @@ pinia.use(({ store }) => {
 app.use(pinia)
 app.use(router)
 app.use(head)
+
+useUserStore().RestoreSession()
 
 app.mount('#app')
