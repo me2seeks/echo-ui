@@ -1,161 +1,171 @@
-<script setup lang="ts">
-  // const store = useStore()
-  const textarea1 = ref('')
-</script>
+<script setup lang="ts"></script>
 <template>
-  <div class="flex flex-col z-1 flex-grow w-1/2 h-full border-r border-gray-700">
-    <div
-      class="bg-base-500 text-base-content sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm border-b border-gray-700"
-    >
-      <nav class="navbar w-full p-0">
-        <div class="flex-1 h-full items-center justify-center hover:bg-gray-700">For you</div>
-        <div class="flex-1 h-full items-center justify-center hover:bg-gray-700">Following</div>
-      </nav>
+  <div class="bg-base-100 drawer lg:drawer-open">
+    <input id="drawer" type="checkbox" class="drawer-toggle" />
+    <div class="drawer-content">
+      <router-view />
     </div>
-    <!-- content -->
-    <div>
-      <div class="flex flex-row z-0 w-full box-border px-4 border-b border-gray-700">
-        <!-- 头像 -->
-        <div class="h-full w-10 mr-2 bg-white"></div>
-        <div class="pt-1 flex justify-center flex-1 flex-col box-border">
-          <el-input
-            v-model="textarea1"
-            class="w-full"
-            :autosize="{ minRows: 2, maxRows: 99 }"
-            type="textarea"
-            placeholder="Please input"
-          />
+
+    <!-- side -->
+    <div class="drawer-side border-r border-gray-600">
+      <label for="drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+      <aside class="bg-base-100 min-h-screen w-96 flex flex-col items-end">
+        <div class="h-full w-64 flex flex-col items-end px-2">
+          <div class="bg-base-100 w-56 items-start">
+            <div
+              data-sveltekit-preload-data=""
+              class="bg-base-100 sticky top-0 z-20 hidden gap-2 bg-opacity-90 px-4 py-2 backdrop-blur lg:flex"
+            >
+              <a href="/" aria-current="page" aria-label="Homepage" class="flex-0 btn btn-ghost px-2">
+                <svg width="32" height="32" viewBox="0 0 415 415" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="82.5" y="290" width="250" height="125" rx="62.5" fill="#1AD1A5"></rect>
+                  <circle cx="207.5" cy="135" r="130" fill="black" fill-opacity=".3"></circle>
+                  <circle cx="207.5" cy="135" r="125" fill="white"></circle>
+                  <circle cx="207.5" cy="135" r="56" fill="#FF9903"></circle>
+                </svg>
+                <div class="font-title inline-flex text-lg md:text-2xl">Echo</div>
+              </a>
+            </div>
+            <div class="h-4"></div>
+            <ul class="menu bg-base-100 rounded-box w-56 items-start">
+              <li>
+                <a ref="#" class="h-14 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+                    />
+                  </svg>
+                  Home
+                  <span class="badge badge-xs badge-info"></span>
+                </a>
+              </li>
+              <li>
+                <a class="h-14 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                  </svg>
+
+                  Explore
+                </a>
+              </li>
+              <li>
+                <a class="h-14 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+                    />
+                  </svg>
+                  Messages
+                  <span class="badge badge-sm">99+</span>
+                </a>
+              </li>
+              <li>
+                <a class="h-14 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                    />
+                  </svg>
+
+                  Bookmarks
+                </a>
+              </li>
+              <li>
+                <a class="h-14 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                    />
+                  </svg>
+
+                  Profile
+                </a>
+              </li>
+            </ul>
+            <div class="w-56 h-14">
+              <button class="btn btn-block rounded-3xl items-center bg-blue-600">Post</button>
+            </div>
+          </div>
         </div>
-      </div>
+        <div class="w-56 px-2 h-16 mt-auto">
+          <button class="btn rounded-3xl bg-base-100 h-14">
+            <div class="avatar">
+              <div class="w-8 rounded-full">
+                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+              </div>
+            </div>
+            <div class="w-20">
+              <div class="ml-2 text-sm font-bold items-start flex flex-col">
+                <div class="line-clamp-1">John Doe</div>
+                <div class="line-clamp-1 text-xs">@123</div>
+              </div>
+            </div>
+            <div class="w-8">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                />
+              </svg>
+            </div>
+          </button>
+        </div>
+      </aside>
     </div>
   </div>
-  <!-- <div class="p-4 mx-auto prose md:px-6 prose-indigo sm:rounded-md">
-    <HelloWorld msg="Hello World Component" />
-
-    <h2>Template Project Features</h2>
-
-    <p>
-      The idea of this template is to bundle as many often used and useful features pre-configured as possible. If you
-      don't need something, just remove it!
-    </p>
-
-    <ul>
-      <li>
-        Pinia store (fully typed Vuex store available in
-        <a href="https://github.com/Uninen/vite-ts-tailwind-starter/tree/v1.13">template version 1.13</a>
-        )
-      </li>
-      <li>TailwindCSS w/ JIT-mode, purge, plugins, and production minimization pre-configured</li>
-      <li>Vue-friendly Eslint and Prettier configuration - use as is or tweak to your liking</li>
-      <li>
-        Alias
-        <code>@</code>
-        to
-        <code>project_root/src</code>
-      </li>
-      <li>Predefined and typed global variables</li>
-      <li>Playwright e2e and component testswith coverage preconfigured</li>
-      <li>Github Workflows preconfigured to run e2e and component tests automatically on every push</li>
-    </ul>
-
-    <h2>Project setup and usage</h2>
-
-    <p>
-      Using
-      <a href="https://github.com/johnsoncodehk/volar">Volar extension for VSCode</a>
-      is recommended to take full advance of the new script setup sugar and full TypeScript support in Vue SFC
-      templates. (This is totally optional but recommended as it results much better DX!) See
-      <a href="https://vuejs.org/guide/scaling-up/tooling.html#ide-support">official IDE Support documentation</a>
-      for more details.
-    </p>
-
-    <h4>Install dependencies</h4>
-
-    <pre>pnpm i</pre>
-
-    <h4>Run development server</h4>
-
-    <pre>pnpm dev</pre>
-
-    <h4>Run unit + component tests (Vitest)</h4>
-
-    <pre>pnpm test</pre>
-
-    <h4>Run e2e tests (Playwright)</h4>
-
-    <pre>pnpm test-e2e</pre>
-
-    <h4>Build for production</h4>
-
-    <pre>pnpm build</pre>
-
-    <h4>Other</h4>
-
-    <p>
-      See
-      <code>package.json</code>
-      for all available commands.
-    </p>
-
-    <h2>Notes and further documentation</h2>
-
-    <h3>Typed ENV Variables</h3>
-
-    <p>
-      Vite exposes a special
-      <code>meta.env</code>
-      object for ENV variables (see
-      <a href="https://vitejs.dev/guide/env-and-mode.html">official docs</a>
-      ). This template extends that object and adds custom typed variables which you can easily use and modify to your
-      needs.
-    </p>
-
-    <p>
-      See
-      <code>vite.config.js</code>
-      and
-      <code>src/env.d.ts</code>
-      for the configuration and
-      <code>src/pages/BaseTemplate.vue</code>
-      for usage example.
-    </p>
-
-    <h3>Code Coverage</h3>
-
-    <p>
-      Code coverage is provided from unit + component tests by
-      <a href="https://vitest.dev/guide/coverage.html">Vitest and V8</a>
-      .
-    </p>
-
-    <p>
-      E2E coverage is a bit trickier to do because of the way Vite works. Typical Vite pipelines don't use babel at all
-      which is needed above for automatically instrument the transpilated code. Vite is powered by eslint which has
-      decided
-      <a href="https://github.com/evanw/esbuild/issues/184">code coverage being out of scope</a>
-      .
-    </p>
-
-    <h2>Elsewhere</h2>
-
-    <ul>
-      <li>
-        Follow
-        <a href="https://twitter.com/uninen">@Uninen on Twitter</a>
-      </li>
-      <li>
-        Lots of continuously updating learnings from Vite / Vue / TypeScript and other Web development topics on my
-        <a href="https://til.unessa.net/">Today I Learned</a>
-        site
-      </li>
-    </ul>
-
-    <h2>Contributing</h2>
-
-    <p>
-      Contributions are welcome! Please follow
-      <a href="https://www.contributor-covenant.org/version/2/0/code_of_conduct/">the code of conduct</a>
-      when interacting with others.
-    </p>
-  </div> -->
 </template>
