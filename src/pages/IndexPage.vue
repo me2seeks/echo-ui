@@ -32,7 +32,7 @@
             <div class="h-4"></div>
             <ul class="menu bg-base-100 rounded-box w-56 items-start">
               <li>
-                <a ref="#" class="h-14 flex items-center">
+                <a ref="home" class="h-14 flex items-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
