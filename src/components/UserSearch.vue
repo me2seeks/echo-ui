@@ -55,27 +55,30 @@
     user: User
   }
   const state = ref('')
+  const lastQuery = ref('')
+  const userItems = ref<UserItem[]>([])
 
-  const users = ref<UserItem[]>([])
-
-  const querySearchAsync = (queryString: string, cb: (arg: UserItem[]) => void) => {
-    if (queryString != '') {
-      searchUsers({
-        keyword: queryString,
+  watch(state, async (newQuery) => {
+    lastQuery.value = newQuery
+    try {
+      const res = await searchUsers({
+        keyword: newQuery,
         page: 0,
         pageSize: 5,
-      }).then((res) => {
-        users.value = []
-        if (res.data.users) {
-          users.value = res.data.users.map((user: User) => ({
-            value: user.nickname,
-            user: user,
-          }))
-        } else {
-          users.value = [{ value: 'No results found', user: { id: 0, nickname: 'No results found', handle: '' } }]
-        }
       })
-      cb(users.value)
+      userItems.value = res.data.users.map((user: User) => ({
+        value: user.nickname,
+        user: user,
+      }))
+    } catch (error) {
+      console.error('Error fetching users:', error)
+      userItems.value = [{ value: 'No results found', user: { id: 0, nickname: 'No results found', handle: '' } }]
+    }
+  })
+
+  const querySearchAsync = (queryString: string, cb: (arg: UserItem[]) => void) => {
+    if (queryString === lastQuery.value) {
+      cb(userItems.value)
     }
   }
 </script>
