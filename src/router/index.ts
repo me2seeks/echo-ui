@@ -5,6 +5,8 @@ import DemoPage from '@/pages/DemoPage.vue'
 import IndexPage from '@/pages/IndexPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import HomePage from '@/pages/HomePage.vue'
+import ExplorePage from '@/pages/ExplorePage.vue'
+import MessagesPage from '@/pages/MessagesPage.vue'
 
 const routes = [
   {
@@ -20,6 +22,20 @@ const routes = [
         component: HomePage,
         meta: {
           title: 'Home',
+        },
+      },
+      {
+        path: 'explore',
+        component: ExplorePage,
+        meta: {
+          title: 'explore',
+        },
+      },
+      {
+        path: 'messages',
+        component: MessagesPage,
+        meta: {
+          title: 'messages',
         },
       },
     ],
