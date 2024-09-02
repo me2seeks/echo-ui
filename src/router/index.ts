@@ -5,6 +5,7 @@ import DemoPage from '@/pages/DemoPage.vue'
 import IndexPage from '@/pages/IndexPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import HomePage from '@/pages/HomePage.vue'
+import SearchPage from '@/pages/SearchPage.vue'
 
 const routes = [
   {
@@ -30,6 +31,13 @@ const routes = [
     component: DemoPage,
     meta: {
       title: 'Demo title',
+    },
+  },
+  {
+    path: '/search/',
+    component: () => SearchPage,
+    meta: {
+      title: 'Search',
     },
   },
   {

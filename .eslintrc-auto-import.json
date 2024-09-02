@@ -88,6 +88,8 @@
     "useHeadSafe": true,
     "useServerHead": true,
     "useServerHeadSafe": true,
-    "useServerSeoMeta": true
+    "useServerSeoMeta": true,
+    "ElMessage": true,
+    "ElNotification": true
   }
 }

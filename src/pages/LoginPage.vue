@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { useUserStore } from '@/store/user'
+  import { ElMessage } from 'element-plus'
 
   const userStore = useUserStore()
   const email = ref<string>('')
@@ -7,6 +8,10 @@
   const isSubmitting = ref<boolean>(false)
   const submit = async () => {
     try {
+      if (!email.value || !password.value) {
+        ElMessage('请输入邮箱和密码')
+        return
+      }
       isSubmitting.value = true
       await userStore.LoginIn({ email: email.value, password: password.value })
     } catch (error) {
