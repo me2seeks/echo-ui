@@ -11,6 +11,9 @@ module.exports = {
       fontSize: {
         '15px': '15px',
       },
+      width: {
+        '28.75vw': '28.75vw',
+      },
       // fontFamily: {
       // sans: [...defaultTheme.fontFamily.sans],
       // },

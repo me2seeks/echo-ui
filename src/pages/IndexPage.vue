@@ -4,7 +4,7 @@
   const userStore = useUserStore()
 </script>
 <template>
-  <div class="bg-base-100 drawer lg:drawer-open">
+  <div class="bg-base-100 drawer lg:drawer-open md:drawer-open">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content">
       <router-view />
@@ -13,9 +13,9 @@
     <!-- side -->
     <div class="drawer-side border-r border-gray-600">
       <label for="drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-      <aside class="bg-base-100 min-h-screen w-96 flex flex-col items-end">
+      <aside class="bg-base-100 min-h-screen w-28.75vw flex flex-col items-end">
         <div class="h-full w-64 flex flex-col items-end px-2">
-          <div class="bg-base-100 w-56 items-start">
+          <div class="bg-base-100 items-start">
             <div
               data-sveltekit-preload-data=""
               class="bg-base-100 sticky top-0 z-20 hidden gap-2 bg-opacity-90 px-4 py-2 backdrop-blur lg:flex"
@@ -31,7 +31,7 @@
               </a>
             </div>
             <div class="h-4"></div>
-            <ul class="menu bg-base-100 rounded-box w-56 items-start">
+            <ul class="menu bg-base-100 rounded-box items-start lg:w-56">
               <li>
                 <a class="h-14 flex items-center" @click="router.push('/')">
                   <svg
@@ -48,7 +48,7 @@
                       d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
                     />
                   </svg>
-                  Home
+                  <span class="ml-2 md:hidden lg:inline">Home</span>
                   <span class="badge badge-xs badge-info"></span>
                 </a>
               </li>
@@ -68,7 +68,7 @@
                       d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
                     />
                   </svg>
-                  Explore
+                  <span class="ml-2 md:hidden lg:inline">Explore</span>
                 </a>
               </li>
               <li>
@@ -87,8 +87,8 @@
                       d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
                     />
                   </svg>
-                  Messages
-                  <span class="badge badge-sm">99+</span>
+                  <span class="ml-2 md:hidden lg:inline">Messages</span>
+                  <!-- <span class="badge badge-sm">99+</span> -->
                 </a>
               </li>
               <li>
@@ -107,8 +107,7 @@
                       d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
                     />
                   </svg>
-
-                  Bookmarks
+                  <span class="ml-2 md:hidden lg:inline">Bookmarks</span>
                 </a>
               </li>
               <li>
@@ -127,17 +126,16 @@
                       d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
                     />
                   </svg>
-
-                  Profile
+                  <span class="ml-2 md:hidden lg:inline">Profile</span>
                 </a>
               </li>
             </ul>
-            <div class="w-56 h-14">
+            <div class="w-56 h-14 lg:inline md:hidden">
               <button class="btn btn-block rounded-3xl items-center bg-blue-600">Post</button>
             </div>
           </div>
         </div>
-        <div class="w-56 px-2 h-16 mt-auto">
+        <div class="w-56 px-2 h-16 mt-auto dropdown dropdown-top md:hidden lg:inline">
           <button class="btn rounded-3xl bg-base-100 h-14">
             <div class="avatar">
               <div class="w-10 rounded-full">
@@ -167,6 +165,16 @@
               </svg>
             </div>
           </button>
+          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+            <li>
+              <a class="justify-between">
+                Profile
+                <span class="badge">New</span>
+              </a>
+            </li>
+            <li><a>Settings</a></li>
+            <li><a>Logout</a></li>
+          </ul>
         </div>
       </aside>
     </div>
