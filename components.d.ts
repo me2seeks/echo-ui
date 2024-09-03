@@ -11,6 +11,8 @@ declare module 'vue' {
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElInput: typeof import('element-plus/es')['ElInput']
+    Feed: typeof import('./src/components/FeedList.vue')['default']
+    FeedList: typeof import('./src/components/FeedList.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

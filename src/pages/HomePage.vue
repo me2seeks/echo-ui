@@ -43,6 +43,55 @@
         </div>
       </div>
       <!-- feeds -->
+      <FeedList />
+      <!-- <div class="flex flex-col w-full">
+        <div class="flex flex-row w-full box-border px-4 pt-3 border-b border-gray-700">
+          <div class="h-full w-9 mr-2">
+            <div class="avatar">
+              <div class="w-10 rounded-full">
+                <img src="http://10.2.12.14:32695/echo/avatars/0367b119-f7f7-4162-bb47-5d8a596ad00f.img" />
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-center flex-1 flex-col box-border pt-1">
+            <div class="flex flex-row w-full">
+              <div class="flex-1">
+                <div class="text-sm font-bold">Uninen</div>
+                <div class="text-xs text-gray-500">2021-08-31 16:24</div>
+              </div>
+              <div class="flex-1 flex justify-end">
+                <div class="text-xs text-gray-500">1 min ago</div>
+              </div>
+            </div>
+            <div class="w-full h-2"></div>
+            <div class="text-sm">
+              U have to fight out for justice. In the case of the old man #maniar who was beaten black and blue in
+              railway and 3 goons who were arrested and released on bail by court because of lethargic approach of
+              police and non application of proper section the police approached the court
+            </div>
+            <div class="w-full h-2"></div>
+            <div class="flex flex-row w-full justify-between">
+              <div class="flex flex-row">
+                <div class="flex items center justify-center w-8 h-8 rounded-full bg-gray-500">
+                  <i class="fas fa-thumbs-up text-white"></i>
+                </div>
+                <div class="flex items center justify-center w-8 h-8 rounded-full bg-gray-500">
+                  <i class="fas fa-thumbs-down text-white"></i>
+                </div>
+                <div class="flex items center justify-center w-8 h-8 rounded-full bg-gray-500">
+                  <i class="fas fa-comment text-white"></i>
+                </div>
+              </div>
+              <div class="flex items center justify-center w-8 h-8 rounded-full bg-gray-500">
+                <i class="fas fa-share text-white"></i>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      <!-- <div class="flex flex-row w-full box-border px-4 pt-3 border-b border-gray-700"></div> -->
+      <!-- </div> -->
+
+      <!-- asd -->
     </div>
   </div>
   <!-- <div class="p-4 mx-auto prose md:px-6 prose-indigo sm:rounded-md">
