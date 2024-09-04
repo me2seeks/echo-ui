@@ -2,6 +2,10 @@
   import router from '@/router'
   import { useUserStore } from '@/store/user'
   const userStore = useUserStore()
+  const Logout = () => {
+    userStore.LoginOut()
+    router.push('/login')
+  }
 </script>
 <template>
   <div class="bg-base-100 drawer lg:drawer-open md:drawer-open">
@@ -173,7 +177,7 @@
               </a>
             </li>
             <li><a>Settings</a></li>
-            <li><a>Logout</a></li>
+            <li @click="Logout"><a>Logout</a></li>
           </ul>
         </div>
       </aside>
