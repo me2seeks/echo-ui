@@ -44,13 +44,9 @@ export const register = (data: RegisterReq): Promise<ApiResponse<RegisterResp>> 
 // @Security ApiKeyAuth
 // @Router /user/ [get]
 export const detail = (): Promise<ApiResponse<DetailResp>> => {
-  const token = window.localStorage.getItem('token') || ''
   return service({
     url: '/user/',
     method: 'get',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   })
 }
 
@@ -60,14 +56,10 @@ export const detail = (): Promise<ApiResponse<DetailResp>> => {
 // @Param data body {nickname:"string",sex:"int32",avatar:"string",bio:"string"}
 // @Router /user/ [post]
 export const update = (data: UpdateReq) => {
-  const token = window.localStorage.getItem('token') || ''
   return service({
     url: '/user/',
     method: 'post',
     data,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   })
 }
 
@@ -77,14 +69,10 @@ export const update = (data: UpdateReq) => {
 // @Param data body {userID:"int64"}
 // @Router /user/follow [post]
 export const follow = (data: FollowReq) => {
-  const token = window.localStorage.getItem('token') || ''
   return service({
     url: '/user/follow',
     method: 'post',
     data,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   })
 }
 
@@ -94,14 +82,10 @@ export const follow = (data: FollowReq) => {
 // @Param data body {userID:"int64"}
 // @Router /user/unfollow [post]
 export const unfollow = (data: UnfollowReq) => {
-  const token = window.localStorage.getItem('token') || ''
   return service({
     url: '/user/unfollow',
     method: 'post',
     data,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   })
 }
 
