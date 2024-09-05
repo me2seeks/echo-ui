@@ -21,7 +21,7 @@ import type {
 //@Param page query int32 true "Page number"
 //@Param pageSize query int32 true "Page size"
 //@Router /feed/{userID} [get]
-export const listFeed = (userID: number, data: GetFeedsByPageReq): Promise<ApiResponse<GetFeedsByPageResp>> => {
+export const listFeed = (userID: string, data: GetFeedsByPageReq): Promise<ApiResponse<GetFeedsByPageResp>> => {
   return service({
     url: `/feed/${userID}`,
     method: 'get',

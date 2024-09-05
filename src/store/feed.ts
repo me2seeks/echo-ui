@@ -1,10 +1,14 @@
 import { listFollowingFeed } from '@/api/feed'
 import { getFeedCounter } from '@/api/counter'
+import { detail } from '@/api/user'
 interface Feed {
-  id: number
+  id: string
   content: string
-  userID: number
-  // TODO 用户信息
+  userID: string
+  nickname: string
+  handle: string
+  avatar: string
+  bio: string
   media0: string
   media1: string
   media2: string
@@ -34,8 +38,13 @@ export const useFeedStore = defineStore('feed', () => {
       const detailedFeeds = await Promise.all(
         feeds.map(async (feed: Feed) => {
           const counter = await getFeedCounter(feed.id)
+          const user = await detail(feed.userID)
           return {
             ...feed,
+            nickname: user.data.userInfo.nickname,
+            handle: user.data.userInfo.handle,
+            avatar: user.data.userInfo.avatar,
+            bio: user.data.userInfo.bio,
             likeCount: counter.LikeCount,
             commentCount: counter.CommentCount,
             viewCount: counter.ViewCount,

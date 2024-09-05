@@ -1,7 +1,7 @@
 export interface Comment {
-  id: number
-  feedID: number
-  userID: number
+  id: string
+  feedID: string
+  userID: string
   content: string
   media0: string
   media1: string
@@ -21,7 +21,7 @@ export interface GetCommentsByPageResp {
 }
 
 export interface CreateCommentReq {
-  commentID: number
+  commentID: string
   content: string
   media0: string
   media1: string
@@ -30,12 +30,12 @@ export interface CreateCommentReq {
 }
 
 export interface CreateCommentResp {
-  id: number
+  id: string
 }
 
 export interface DeleteCommentReq {
-  id: number
-  parentID: number
+  id: string
+  parentID: string
 }
 
 export interface DeleteCommentResp {}

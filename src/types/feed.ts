@@ -1,8 +1,8 @@
 import type { Comment } from './comment'
 export interface Feed {
-  id: number
+  id: string
   content: string
-  userID: number
+  userID: string
   media0: string
   media1: string
   media2: string
@@ -19,11 +19,11 @@ export interface CreateFeedReq {
 }
 
 export interface CreateFeedResp {
-  id: number
+  id: string
 }
 
 export interface DeleteFeedReq {
-  id: number
+  id: string
 }
 
 export interface DeleteFeedResp {}
@@ -67,5 +67,5 @@ export interface CreateFeedCommentReq {
 }
 
 export interface CreateFeedCommentResp {
-  id: number
+  id: string
 }

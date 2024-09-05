@@ -43,10 +43,11 @@ export const register = (data: RegisterReq): Promise<ApiResponse<RegisterResp>> 
 // @Produce  application/json
 // @Security ApiKeyAuth
 // @Router /user/ [get]
-export const detail = (): Promise<ApiResponse<DetailResp>> => {
+export const detail = (userID: string): Promise<ApiResponse<DetailResp>> => {
   return service({
     url: '/user/',
     method: 'get',
+    params: { userID },
   })
 }
 

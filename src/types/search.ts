@@ -5,20 +5,22 @@ export interface SearchReq {
 }
 
 export interface User {
-  id: number
+  id: string
   nickname: string
   handle: string
+  avatar: string
+  createTime: number
 }
 
 export interface Feed {
-  id: number
+  id: string
   content: string
-  userID: number
+  userID: string
   media0: string
   media1: string
   media2: string
   media3: string
-  created: number
+  createTime: number
 }
 
 //resp

@@ -19,25 +19,25 @@ export interface UpdateReq {
 }
 
 export interface FollowReq {
-  userID: number
+  userID: String
 }
 
 export interface UnfollowReq {
-  userID: number
+  userID: String
 }
 
 export interface FollowersReq {
-  userID: number
+  userID: String
 }
 
 export interface FollowingsReq {
-  userID: number
+  userID: String
 }
 
 // resp
 
 export interface userInfo {
-  id: number
+  id: string
   email: string
   nickname: string
   handle: string
@@ -63,9 +63,9 @@ export interface DetailResp {
 }
 
 export interface FollowersResp {
-  followers: number[]
+  followers: String[]
 }
 
 export interface FollowingsResp {
-  followings: number[]
+  followings: String[]
 }

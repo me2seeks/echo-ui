@@ -13,7 +13,7 @@ enum Gender {
 }
 
 interface UserInfo {
-  id: number
+  id: string
   nickname: string
   handle: string
   email: string
@@ -24,7 +24,7 @@ interface UserInfo {
 
 export const useUserStore = defineStore('user', () => {
   const userInfo: Ref<UserInfo> = ref({
-    id: 0,
+    id: '',
     nickname: '',
     handle: '',
     email: '',
@@ -57,7 +57,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const GetUserInfo = async () => {
-    const res = await detail()
+    const res = await detail(userInfo.value.id)
     if (res.code !== 200) {
       ElMessage.error(res.msg)
     }
@@ -85,7 +85,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const RestoreSession = async () => {
-    if (token.value && !userInfo.value.id) {
+    if (token.value && userInfo.value.id === '') {
       await GetUserInfo()
     }
   }
