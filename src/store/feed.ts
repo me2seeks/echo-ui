@@ -45,9 +45,9 @@ export const useFeedStore = defineStore('feed', () => {
             handle: user.data.userInfo.handle,
             avatar: user.data.userInfo.avatar,
             bio: user.data.userInfo.bio,
-            likeCount: counter.LikeCount,
-            commentCount: counter.CommentCount,
-            viewCount: counter.ViewCount,
+            likeCount: counter.data.likeCount,
+            commentCount: counter.data.commentCount,
+            viewCount: counter.data.viewCount,
           }
         })
       )

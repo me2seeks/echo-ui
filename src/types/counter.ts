@@ -1,11 +1,11 @@
 export interface GetContentCounterResp {
-  CommentCount: number
-  LikeCount: number
-  ViewCount: number
+  commentCount: number
+  likeCount: number
+  viewCount: number
 }
 
 export interface GetUserCounterResp {
-  FollowingCount: number
-  FollowerCount: number
-  FeedCount: number
+  followingCount: number
+  followerCount: number
+  feedCount: number
 }
