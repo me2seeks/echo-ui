@@ -1,13 +1,13 @@
 <script setup lang="ts">
   import { useFeedStore } from '@/store/feed'
-  const feedSote = useFeedStore()
+  const feedStore = useFeedStore()
   onMounted(() => {
-    feedSote.getFollowingFeeds()
+    feedStore.getFollowingFeeds()
   })
 </script>
 <template>
   <article
-    v-for="feed in feedSote.followingFeeds"
+    v-for="feed in feedStore.followingFeeds"
     :key="feed.id"
     class="flex overflow-hidden flex-col max-w-[568px] box-border py-3 px-4 border-b border-gray-700"
   >
@@ -30,14 +30,14 @@
               >
                 <!-- 添加follow按钮  -->
                 <template #reference>
-                  <h1 class="grow self-stretch my-auto font-bold text-gray-200">Fabrizio Romano</h1>
+                  <h1 class="grow self-stretch my-auto font-bold text-gray-200">{{ feed.nickname }}</h1>
                   <img
                     loading="lazy"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/484685b405da29a776ff5d42c60b2cad73c4982cb85b7fa0809d343ea5febaa4?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
                     alt="Verified Badge"
                     class="object-contain shrink-0 self-stretch aspect-[0.95] w-[18px]"
                   />
-                  <p class="self-stretch my-auto basis-auto text-zinc-500">@FabrizioRomano</p>
+                  <p class="self-stretch my-auto basis-auto text-zinc-500">@{{ feed.handle }}</p>
                 </template>
                 <template #default>
                   <div class="demo-rich-conent" style="display: flex; gap: 16px; flex-direction: column">

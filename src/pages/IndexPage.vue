@@ -10,7 +10,7 @@
 <template>
   <div class="bg-base-100 drawer lg:drawer-open md:drawer-open">
     <input id="drawer" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content">
+    <div class="drawer-content flex h-full">
       <router-view />
     </div>
 
