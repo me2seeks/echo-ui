@@ -5,7 +5,7 @@
   const textarea1 = ref('')
 </script>
 <template>
-  <div class="flex flex-col z-1 flex-grow w-1/12 h-full border-r border-gray-700">
+  <div class="flex flex-col z-1 flex-grow max-w-[566px] h-full border-r border-gray-700">
     <div
       class="bg-base-500 text-base-content sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm border-b border-gray-700"
     >

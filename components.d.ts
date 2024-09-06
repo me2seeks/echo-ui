@@ -15,6 +15,8 @@ declare module 'vue' {
     Feed: typeof import('./src/components/FeedList.vue')['default']
     FeedList: typeof import('./src/components/FeedList.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    PinnedPost: typeof import('./src/components/PinnedPost.vue')['default']
+    RegularPost: typeof import('./src/components/RegularPost.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchPage: typeof import('./src/components/UserSearch.vue')['default']

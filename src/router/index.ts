@@ -7,6 +7,7 @@ import LoginPage from '@/pages/LoginPage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import ExplorePage from '@/pages/ExplorePage.vue'
 import MessagesPage from '@/pages/MessagesPage.vue'
+import ProfilePage from '@/pages/ProfilePage.vue'
 
 const routes = [
   {
@@ -36,6 +37,14 @@ const routes = [
         component: MessagesPage,
         meta: {
           title: 'messages',
+        },
+      },
+      {
+        path: 'profile/:handle',
+        component: ProfilePage,
+        props: true,
+        meta: {
+          title: 'profile',
         },
       },
     ],
