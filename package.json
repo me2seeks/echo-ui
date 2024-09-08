@@ -19,6 +19,7 @@
   "dependencies": {
     "@unhead/vue": "1.10.0",
     "axios": "^1.7.6",
+    "date-fns": "^3.6.0",
     "element-plus": "^2.8.1",
     "heroicons": "^2.1.5",
     "js-cookie": "^3.0.5",

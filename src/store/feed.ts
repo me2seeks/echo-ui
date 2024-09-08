@@ -1,6 +1,7 @@
 import { listFollowingFeed } from '@/api/feed'
 import { getFeedCounter } from '@/api/counter'
 import { detail } from '@/api/user'
+import { formatDistanceToNow } from 'date-fns'
 interface Feed {
   id: string
   content: string
@@ -13,7 +14,7 @@ interface Feed {
   media1: string
   media2: string
   media3: string
-  createTime: Date
+  createTime: string
   likeCount: number
   commentCount: number
   viewCount: number
@@ -39,8 +40,12 @@ export const useFeedStore = defineStore('feed', () => {
         feeds.map(async (feed: Feed) => {
           const counter = await getFeedCounter(feed.id)
           const user = await detail(feed.userID)
+          const formattedTime = computed(() => {
+            return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
+          })
           return {
             ...feed,
+            createTime: formattedTime.value,
             nickname: user.data.userInfo.nickname,
             handle: user.data.userInfo.handle,
             avatar: user.data.userInfo.avatar,

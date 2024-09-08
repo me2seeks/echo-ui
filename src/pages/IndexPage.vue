@@ -31,7 +31,7 @@
                   <circle cx="207.5" cy="135" r="125" fill="white"></circle>
                   <circle cx="207.5" cy="135" r="56" fill="#FF9903"></circle>
                 </svg>
-                <div class="font-title inline-flex text-lg md:text-2xl">Echo</div>
+                <div class="font-title inline-flex text-lg md:text-2xl"></div>
               </a>
             </div>
             <div class="h-4"></div>

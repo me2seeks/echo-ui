@@ -1,5 +1,13 @@
 <template>
-  <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync" placeholder="Search" clearable :debounce="100">
+  <el-autocomplete
+    ref="autocomplete"
+    v-model="state"
+    :fetch-suggestions="querySearchAsync"
+    placeholder="Search"
+    clearable
+    :debounce="100"
+    class="lightblue"
+  >
     <template #default="{ item }">
       <button class="flex items-center px-1 py-1 bg">
         <img v-if="item.user && item.user.avatar" :src="item.user.avatar" class="h-10 w-10 shrink-0 rounded-full" />
@@ -49,6 +57,7 @@
 <script lang="ts" setup>
   import type { User } from '@/types/search'
   import { searchUsers } from '@/api/search'
+  // import type { ElAutocomplete } from 'element-plus'
 
   interface UserItem {
     value: string
@@ -57,6 +66,19 @@
   const state = ref('')
   const lastQuery = ref('')
   const userItems = ref<UserItem[]>([])
+
+  // const autocomplete = ref<InstanceType<typeof ElAutocomplete> | null>(null)
+
+  // onMounted(() => {
+  //   const inputRef = autocomplete.value?.inputRef
+  //   if (inputRef) {
+  //     const inputElement = inputRef.$el.querySelector('input') as HTMLInputElement
+  //     if (inputElement) {
+  //       inputElement.style.backgroundColor = 'lightblue' // 修改背景颜色
+  //       inputElement.style.border = '2px solid red' // 修改边框样式
+  //     }
+  //   }
+  // })
 
   watch(state, async (newQuery) => {
     lastQuery.value = newQuery
@@ -72,7 +94,12 @@
       }))
     } catch (error) {
       console.error('Error fetching users:', error)
-      userItems.value = [{ value: 'No results found', user: { id: 0, nickname: 'No results found', handle: '' } }]
+      userItems.value = [
+        {
+          value: 'No results found',
+          user: { id: '0', nickname: 'No results found', handle: '', avatar: '', createTime: 0 },
+        },
+      ]
     }
   })
 
