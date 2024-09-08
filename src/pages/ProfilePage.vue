@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { useRoute } from 'vue-router'
+  import router from '@/router'
 
   const route = useRoute()
   const handle = route.params.handle
@@ -20,6 +21,7 @@
                   src="https://cdn.builder.io/api/v1/image/assets/TEMP/afb99d521f7d10c7b32bc449798946c941be7ba87f3ada267b2418e57096177f?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
                   class="object-contain shrink-0 mt-2 w-5 aspect-square"
                   alt=""
+                  @click="router.back()"
                 />
                 <div class="flex gap-2">
                   <div class="grow my-auto">Fabrizio Romano</div>
