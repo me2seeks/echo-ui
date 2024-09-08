@@ -2,6 +2,8 @@ import { listFollowingFeed } from '@/api/feed'
 import { getFeedCounter } from '@/api/counter'
 import { detail } from '@/api/user'
 import { formatDistanceToNow } from 'date-fns'
+
+// TODO 将用户单独存储到一个 map 中，避免重复请求
 interface Feed {
   id: string
   content: string

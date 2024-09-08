@@ -115,7 +115,7 @@
                 </a>
               </li>
               <li>
-                <a class="h-14 flex items-center">
+                <a class="h-14 flex items-center" @click="router.push(`/profile/${userStore.userInfo.handle}`)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

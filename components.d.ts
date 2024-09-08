@@ -7,11 +7,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ContentBox: typeof import('./src/components/ContentBox.vue')['default']
     ElAutocomplete: typeof import('element-plus/es')['ElAutocomplete']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
+    ElDialog: typeof import('element-plus/es')['ElDialog']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
+    ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElPopover: typeof import('element-plus/es')['ElPopover']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     Feed: typeof import('./src/components/FeedList.vue')['default']
     FeedList: typeof import('./src/components/FeedList.vue')['default']
     FollowBtn: typeof import('./src/components/FollowBtn.vue')['default']
