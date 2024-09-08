@@ -4,6 +4,15 @@
   onMounted(() => {
     feedStore.getFollowingFeeds()
   })
+  function comment(id: string) {
+    console.log('Commented', id)
+  }
+  function report(id: string) {
+    console.log('Reported', id)
+  }
+  function like(id: string) {
+    console.log('Liked', id)
+  }
 </script>
 <template>
   <article
@@ -27,7 +36,7 @@
 
               <div class="flex flex-col gap-1.5 ml-2">
                 <div class="flex flex-row gap-1.5 items-center">
-                  <span class="text-sm font-bold text-white">{{ feed.nickname }}</span>
+                  <span class="text-sm font-bold">{{ feed.nickname }}</span>
                   <span class="text-xs text-zinc-500">{{ feed.handle }}</span>
                   <span class="text-xs text-zinc-500">·</span>
                   <span class="text-xs text-zinc-500">{{ feed.createTime }}</span>
@@ -56,9 +65,9 @@
           </template>
         </el-popover>
       </div>
-      <p class="mt-1.5 text-base leading-none text-gray-200 whitespace-pre-wrap">{{ feed.content }}</p>
+      <p class="mt-1.5 text-base leading-none whitespace-pre-wrap">{{ feed.content }}</p>
       <figure
-        class="flex overflow-hidden flex-col justify-center p-px mt-3 w-full rounded-2xl border border-solid border-zinc-800 max-w-[410px]"
+        class="flex overflow-hidden flex-col justify-center p-px mt-3 w-full rounded-2xl border border-solid border-zinc-800"
       >
         <img
           loading="lazy"
@@ -71,54 +80,114 @@
 
     <footer class="flex flex-wrap gap-10 self-end mt-3.5 w-full max-w-[518px] max-md:max-w-full">
       <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/cc193d4f7113040facbbc839c3666e301f510e46f289f7f1fe3c9bb7bbfd9fa5?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
-          alt="Comment Icon"
-          class="object-contain shrink-0 aspect-square w-[19px]"
-        />
-        <span class="my-auto">{{ feed.commentCount }}</span>
+        <div class="flex" @click="comment(feed.id)">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+            />
+          </svg>
+
+          <span class="my-auto">{{ feed.commentCount }}</span>
+        </div>
       </div>
       <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/b1f24c18adbc6ed5c1aeb50e3d48ee1236af9b62a8b00c8fa206f524ce2d9387?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
-          alt="Retweet Icon"
-          class="object-contain shrink-0 aspect-square w-[19px]"
-        />
-        <span class="my-auto">138K</span>
+        <div class="flex" @click="report(feed.id)">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3"
+            />
+          </svg>
+
+          <span class="my-auto">138K</span>
+        </div>
       </div>
       <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/31a26cc6e81b30345bc6f1ef9a37f47fde9157369e107be2b9ae3101bae4458b?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
-          alt="Like Icon"
-          class="object-contain shrink-0 aspect-square w-[19px]"
-        />
-        <span class="my-auto">{{ feed.likeCount }}</span>
+        <div class="flex" @click="like(feed.id)">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+            />
+          </svg>
+
+          <span class="my-auto">{{ feed.likeCount }}</span>
+        </div>
       </div>
       <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/296b47840f9400866460b37b54c0344fc9c18fa346d2417cec32c60a7a0b4135?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
-          alt="Share Icon"
-          class="object-contain shrink-0 aspect-square w-[19px]"
-        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+          />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+
         <span class="my-auto">{{ feed.viewCount }}</span>
       </div>
       <div class="flex flex-1 gap-3">
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/baf31723cc9f07315078c83769cd144687f002b063eb419fef3e36dc12bb8369?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
-          alt="Bookmark Icon"
-          class="object-contain shrink-0 aspect-square w-[19px]"
-        />
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/d8b6669ffe32d2ebf994e3f5b8232fe88954b2c188784d83716e0e025278b001?placeholderIfAbsent=true&apiKey=80de33d4e37547dbb64d50ac71e681c5"
-          alt="Analytics Icon"
-          class="object-contain shrink-0 aspect-square w-[19px]"
-        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+          />
+        </svg>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+          />
+        </svg>
       </div>
     </footer>
   </article>
