@@ -1,10 +1,12 @@
 import cookie from 'js-cookie'
 import router from '@/router/index'
 import { defineStore } from 'pinia'
-import { detail } from '@/api/user'
+import { detail, follow } from '@/api/user'
 import type { LoginReq } from '@/types/user'
+import type { FollowReq } from '@/types/user'
 import { ElMessage } from 'element-plus'
 import { login } from '@/api/user'
+import { getUserCounter } from '@/api/counter'
 
 enum Gender {
   Unknown = 0,
@@ -20,6 +22,9 @@ interface UserInfo {
   avatar: string
   bio: string
   sex: Gender
+  followingCount: number
+  followerCount: number
+  feedCount: number
 }
 
 export const useUserStore = defineStore('user', () => {
@@ -31,6 +36,9 @@ export const useUserStore = defineStore('user', () => {
     avatar: '',
     bio: '',
     sex: Gender.Unknown,
+    followingCount: 0,
+    followerCount: 0,
+    feedCount: 0,
   })
 
   const token: Ref<string> = ref(window.localStorage.getItem('token') || cookie.get('x-token') || '')
@@ -61,7 +69,23 @@ export const useUserStore = defineStore('user', () => {
     if (res.code !== 200) {
       ElMessage.error(res.msg)
     }
-    setUserInfo(res.data.userInfo)
+    const counterRes = await getUserCounter(res.data.userInfo.id)
+    if (counterRes.code !== 200) {
+      ElMessage.error(counterRes.msg)
+    }
+    const userInfoData: UserInfo = {
+      ...res.data.userInfo,
+      followingCount: counterRes.data.followingCount,
+      followerCount: counterRes.data.followerCount,
+      feedCount: counterRes.data.feedCount,
+    }
+    setUserInfo(userInfoData)
+  }
+
+  const Follow = async (id: string) => {
+    const followReq: FollowReq = { userID: id }
+    await follow(followReq)
+    userInfo.value.followingCount++
   }
 
   const LoginOut = async () => {
@@ -106,6 +130,7 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn,
     redirectPath,
     ResetUserInfo,
+    Follow,
     GetUserInfo,
     RestoreSession,
     LoginOut,

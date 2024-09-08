@@ -14,6 +14,7 @@ declare module 'vue' {
     ElPopover: typeof import('element-plus/es')['ElPopover']
     Feed: typeof import('./src/components/FeedList.vue')['default']
     FeedList: typeof import('./src/components/FeedList.vue')['default']
+    FollowBtn: typeof import('./src/components/FollowBtn.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     PinnedPost: typeof import('./src/components/PinnedPost.vue')['default']
     RegularPost: typeof import('./src/components/RegularPost.vue')['default']

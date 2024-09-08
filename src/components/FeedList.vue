@@ -36,15 +36,19 @@
             </div>
           </template>
           <template #default>
-            <div class="demo-rich-conent" style="display: flex; gap: 16px; flex-direction: column">
-              <el-avatar :size="60" :src="feed.avatar" style="margin-bottom: 8px" />
+            <div class="flex flex-col gap-4">
+              <div class="avatar">
+                <div class="w-12 rounded-full">
+                  <img :src="feed.avatar" />
+                </div>
+              </div>
               <div>
-                <p class="demo-rich-content__name" style="margin: 0; font-weight: 500">{{ feed.nickname }}</p>
-                <p class="demo-rich-content__mention" style="margin: 0; font-size: 14px; color: var(--el-color-info)">
+                <p class="mr-0 font-medium">{{ feed.nickname }}</p>
+                <p class="mr-0 text-xs" style="margin: 0; font-size: 14px; color: var(--el-color-info)">
                   @{{ feed.handle }}
                 </p>
               </div>
-
+              <FollowBtn />
               <p class="demo-rich-content__desc" style="margin: 0">
                 {{ feed.bio }}
               </p>
