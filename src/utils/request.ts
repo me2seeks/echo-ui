@@ -14,7 +14,7 @@ service.interceptors.request.use((config) => {
   headers.set('Content-Type', 'application/json')
   headers.set('Authorization', `Bearer ${userStore.token}`)
   config.headers = headers
-  console.log(config.headers)
+  console.log(config)
   return config
 })
 

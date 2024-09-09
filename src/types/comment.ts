@@ -8,6 +8,7 @@ export interface Comment {
   media2: string
   media3: string
   createTime: number
+  isLiked: boolean
 }
 
 export interface GetCommentsByPageReq {

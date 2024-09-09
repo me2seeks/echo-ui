@@ -20,6 +20,7 @@ interface Feed {
   likeCount: number
   commentCount: number
   viewCount: number
+  isLiked: boolean
 }
 
 export const useFeedStore = defineStore('feed', () => {

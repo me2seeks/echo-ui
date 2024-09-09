@@ -8,6 +8,7 @@ export interface Feed {
   media2: string
   media3: string
   createTime: number
+  isLiked: boolean
 }
 
 export interface CreateFeedReq {
