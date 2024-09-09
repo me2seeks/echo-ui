@@ -1,11 +1,7 @@
 import type {
-  CreateCommentLikeReq,
   CreateCommentLikeResp,
-  CreateFeedLikeReq,
   CreateFeedLikeResp,
-  DeleteCommentLikeReq,
   DeleteCommentLikeResp,
-  DeleteFeedLikeReq,
   DeleteFeedLikeResp,
 } from '@/types/interaction'
 import service from '@/utils/request'
@@ -15,11 +11,10 @@ import type { ApiResponse } from '@/types'
 //@Produce application/json
 //@Param body body CreateFeedLikeReq true "feed id"
 //@Router /interaction/feed/like [post]
-export const likeFeed = (data: CreateFeedLikeReq): Promise<ApiResponse<CreateFeedLikeResp>> => {
+export const likeFeed = (id: string): Promise<ApiResponse<CreateFeedLikeResp>> => {
   return service({
-    url: '/interaction/feed/like',
+    url: `/interaction/feed/${id}/like`,
     method: 'post',
-    data,
   })
 }
 
@@ -27,11 +22,10 @@ export const likeFeed = (data: CreateFeedLikeReq): Promise<ApiResponse<CreateFee
 //@Produce application/json
 //@Param body body DeleteFeedLikeReq true "feed id"
 //@Router /interaction/feed/like [delete]
-export const unlikeFeed = (data: DeleteFeedLikeReq): Promise<ApiResponse<DeleteFeedLikeResp>> => {
+export const unlikeFeed = (id: string): Promise<ApiResponse<DeleteFeedLikeResp>> => {
   return service({
-    url: '/interaction/feed/like',
+    url: `/interaction/feed/${id}/like`,
     method: 'delete',
-    data,
   })
 }
 
@@ -39,11 +33,10 @@ export const unlikeFeed = (data: DeleteFeedLikeReq): Promise<ApiResponse<DeleteF
 //@Produce application/json
 //@Param body body CreateCommentLikeReq true "comment id"
 //@Router /interaction/comment/like [post]
-export const likeComment = (data: CreateCommentLikeReq): Promise<ApiResponse<CreateCommentLikeResp>> => {
+export const likeComment = (id: string): Promise<ApiResponse<CreateCommentLikeResp>> => {
   return service({
-    url: '/interaction/comment/like',
+    url: `/interaction/comment/${id}/like`,
     method: 'post',
-    data,
   })
 }
 
@@ -51,232 +44,9 @@ export const likeComment = (data: CreateCommentLikeReq): Promise<ApiResponse<Cre
 //@Produce application/json
 //@Param body body DeleteCommentLikeReq true "comment id"
 //@Router /interaction/comment/like [delete]
-export const unlikeComment = (data: DeleteCommentLikeReq): Promise<ApiResponse<DeleteCommentLikeResp>> => {
+export const unlikeComment = (id: string): Promise<ApiResponse<DeleteCommentLikeResp>> => {
   return service({
-    url: '/interaction/comment/like',
+    url: `/interaction/comment/${id}/like`,
     method: 'delete',
-    data,
   })
 }
-
-// {
-//     "swagger": "2.0",
-//     "info": {
-//       "title": "",
-//       "version": ""
-//     },
-//     "schemes": [
-//       "http",
-//       "https"
-//     ],
-//     "consumes": [
-//       "application/json"
-//     ],
-//     "produces": [
-//       "application/json"
-//     ],
-//     "paths": {
-//       "/interaction/comment/like": {
-//         "delete": {
-//           "summary": "unlike",
-//           "operationId": "unlike",
-//           "responses": {
-//             "200": {
-//               "description": "A successful response.",
-//               "schema": {
-//                 "$ref": "#/definitions/DeleteCommentLikeResp"
-//               }
-//             }
-//           },
-//           "parameters": [
-//             {
-//               "name": "body",
-//               "in": "body",
-//               "required": true,
-//               "schema": {
-//                 "$ref": "#/definitions/DeleteCommentLikeReq"
-//               }
-//             }
-//           ],
-//           "tags": [
-//             "comment"
-//           ],
-//           "security": [
-//             {
-//               "apiKey": []
-//             }
-//           ]
-//         },
-//         "post": {
-//           "summary": "like",
-//           "operationId": "like",
-//           "responses": {
-//             "200": {
-//               "description": "A successful response.",
-//               "schema": {
-//                 "$ref": "#/definitions/CreateCommentLikeResp"
-//               }
-//             }
-//           },
-//           "parameters": [
-//             {
-//               "name": "body",
-//               "in": "body",
-//               "required": true,
-//               "schema": {
-//                 "$ref": "#/definitions/CreateCommentLikeReq"
-//               }
-//             }
-//           ],
-//           "tags": [
-//             "comment"
-//           ],
-//           "security": [
-//             {
-//               "apiKey": []
-//             }
-//           ]
-//         }
-//       },
-//       "/interaction/feed/like": {
-//         "delete": {
-//           "summary": "unlike",
-//           "operationId": "unlike",
-//           "responses": {
-//             "200": {
-//               "description": "A successful response.",
-//               "schema": {
-//                 "$ref": "#/definitions/DeleteFeedLikeResp"
-//               }
-//             }
-//           },
-//           "parameters": [
-//             {
-//               "name": "body",
-//               "in": "body",
-//               "required": true,
-//               "schema": {
-//                 "$ref": "#/definitions/DeleteFeedLikeReq"
-//               }
-//             }
-//           ],
-//           "tags": [
-//             "feed"
-//           ],
-//           "security": [
-//             {
-//               "apiKey": []
-//             }
-//           ]
-//         },
-//         "post": {
-//           "summary": "like",
-//           "operationId": "like",
-//           "responses": {
-//             "200": {
-//               "description": "A successful response.",
-//               "schema": {
-//                 "$ref": "#/definitions/CreateFeedLikeResp"
-//               }
-//             }
-//           },
-//           "parameters": [
-//             {
-//               "name": "body",
-//               "in": "body",
-//               "required": true,
-//               "schema": {
-//                 "$ref": "#/definitions/CreateFeedLikeReq"
-//               }
-//             }
-//           ],
-//           "tags": [
-//             "feed"
-//           ],
-//           "security": [
-//             {
-//               "apiKey": []
-//             }
-//           ]
-//         }
-//       }
-//     },
-//     "definitions": {
-//       "CreateCommentLikeReq": {
-//         "type": "object",
-//         "properties": {
-//           "id": {
-//             "type": "integer",
-//             "format": "int64"
-//           }
-//         },
-//         "title": "CreateCommentLikeReq",
-//         "required": [
-//           "id"
-//         ]
-//       },
-//       "CreateCommentLikeResp": {
-//         "type": "object",
-//         "title": "CreateCommentLikeResp"
-//       },
-//       "CreateFeedLikeReq": {
-//         "type": "object",
-//         "properties": {
-//           "id": {
-//             "type": "integer",
-//             "format": "int64"
-//           }
-//         },
-//         "title": "CreateFeedLikeReq",
-//         "required": [
-//           "id"
-//         ]
-//       },
-//       "CreateFeedLikeResp": {
-//         "type": "object",
-//         "title": "CreateFeedLikeResp"
-//       },
-//       "DeleteCommentLikeReq": {
-//         "type": "object",
-//         "properties": {
-//           "id": {
-//             "type": "integer",
-//             "format": "int64"
-//           }
-//         },
-//         "title": "DeleteCommentLikeReq",
-//         "required": [
-//           "id"
-//         ]
-//       },
-//       "DeleteCommentLikeResp": {
-//         "type": "object",
-//         "title": "DeleteCommentLikeResp"
-//       },
-//       "DeleteFeedLikeReq": {
-//         "type": "object",
-//         "properties": {
-//           "id": {
-//             "type": "integer",
-//             "format": "int64"
-//           }
-//         },
-//         "title": "DeleteFeedLikeReq",
-//         "required": [
-//           "id"
-//         ]
-//       },
-//       "DeleteFeedLikeResp": {
-//         "type": "object",
-//         "title": "DeleteFeedLikeResp"
-//       }
-//     },
-//     "securityDefinitions": {
-//       "apiKey": {
-//         "type": "apiKey",
-//         "description": "Enter JWT Bearer token **_only_**",
-//         "name": "Authorization",
-//         "in": "header"
-//       }
-//     }
-//   }
