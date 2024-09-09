@@ -13,7 +13,10 @@
         return
       }
       isSubmitting.value = true
-      await userStore.LoginIn({ email: email.value, password: password.value })
+      await userStore.LoginIn({ email: email.value, password: password.value }).then(() => {
+        ElMessage('登录成功')
+        router.push('/')
+      })
     } catch (error) {
       console.error('Login failed', error)
     } finally {
