@@ -6,6 +6,9 @@
   import { fileType } from '@/types/upload'
   import { create } from '@/api/feed'
   import { getPathWithoutQuery } from '@/utils/path'
+  import { useUserStore } from '@/store/user'
+
+  const userStore = useUserStore()
 
   const textarea = ref('')
   function postFeed() {
@@ -15,6 +18,11 @@
       media1: mediaList.value[1] || '',
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
+    }).then(() => {
+      userStore.userInfo.feedCount++
+      textarea.value = ''
+      fileList.value = []
+      mediaList.value = []
     })
   }
 
