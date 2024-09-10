@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { useFeedStore } from '@/store/feed'
   import { likeFeed, unlikeFeed } from '@/api/interaction'
+  import router from '@/router'
   const feedStore = useFeedStore()
   onMounted(() => {
     feedStore.getFollowingFeeds()
@@ -12,16 +13,30 @@
     console.log('Reported', id)
   }
   function like(id: string) {
-    console.log('Liked', id)
     likeFeed(id).then((res) => {
-      console.log(res)
+      if (res.code == 200) {
+        const feed = feedStore.followingFeeds.find((feed) => feed.id == id)
+        if (feed) {
+          feed.isLiked = !feed?.isLiked
+          feed.likeCount++
+        }
+      }
     })
   }
   function unLike(id: string) {
     console.log('Unliked', id)
     unlikeFeed(id).then((res) => {
-      console.log(res)
+      if (res.code == 200) {
+        const feed = feedStore.followingFeeds.find((feed) => feed.id == id)
+        if (feed) {
+          feed.isLiked = !feed?.isLiked
+          feed.likeCount--
+        }
+      }
     })
+  }
+  function goToStatus(handle: string, feedID: string) {
+    router.push(`/${handle}/status/${feedID}`)
   }
 </script>
 <template>
@@ -29,6 +44,7 @@
     v-for="feed in feedStore.followingFeeds"
     :key="feed.id"
     class="flex overflow-hidden flex-col max-w-[568px] box-border py-3 px-4 border-b border-gray-700"
+    @click="goToStatus(feed.handle, feed.id)"
   >
     <section class="flex flex-wrap gap-1.5 flex-col">
       <div class="flex flex-row grow shrink-0 items-start basis-0 w-fit max-md:max-w-full">
@@ -148,7 +164,7 @@
           <span class="my-auto">{{ feed.likeCount }}</span>
         </div>
         <div v-show="feed.isLiked" class="flex" @click="unLike(feed.id)">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
             <path
               d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"
             />

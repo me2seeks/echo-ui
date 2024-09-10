@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import router from '@/router'
   import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
 

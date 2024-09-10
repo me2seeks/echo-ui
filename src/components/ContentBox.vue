@@ -92,7 +92,7 @@
   <div class="pt-2">
     <el-upload
       v-model:file-list="fileList"
-      action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+      action="#"
       list-type="picture-card"
       accept="image/*"
       limit:4
