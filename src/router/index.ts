@@ -8,6 +8,7 @@ import HomePage from '@/pages/HomePage.vue'
 import ExplorePage from '@/pages/ExplorePage.vue'
 import MessagesPage from '@/pages/MessagesPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
+import StatusPage from '@/pages/StatusPage.vue'
 
 const routes = [
   {
@@ -46,6 +47,11 @@ const routes = [
         meta: {
           title: 'profile',
         },
+      },
+      {
+        path: ':handle/status/:feedID',
+        component: StatusPage,
+        props: true,
       },
     ],
   },
