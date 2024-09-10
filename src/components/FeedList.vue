@@ -1,18 +1,100 @@
 <script setup lang="ts">
   import { useFeedStore } from '@/store/feed'
   import { likeFeed, unlikeFeed } from '@/api/interaction'
+  import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
+  import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
+  import { presign } from '@/api/upload'
+  import { fileType } from '@/types/upload'
+  import { createComment } from '@/api/feed'
+  import { getPathWithoutQuery } from '@/utils/path'
+
   import router from '@/router'
   const feedStore = useFeedStore()
+  const isOpen = ref(false)
+  const textarea = ref('')
+  const feedId = ref('')
+
+  function postComment() {
+    createComment(feedId.value, {
+      content: textarea.value,
+      media0: mediaList.value[0] || '',
+      media1: mediaList.value[1] || '',
+      media2: mediaList.value[2] || '',
+      media3: mediaList.value[3] || '',
+    }).then(() => {
+      const feed = feedStore.followingFeeds.find((feed) => feed.id == feedId.value)
+      if (feed) {
+        feed.commentCount++
+      }
+      textarea.value = ''
+      fileList.value = []
+      mediaList.value = []
+      closeModal()
+    })
+  }
+
+  const fileList = ref<UploadUserFile[]>([])
+  const mediaList = ref<string[]>([])
+  const dialogImageUrl = ref('')
+  const dialogVisible = ref(false)
+
+  const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
+    dialogImageUrl.value = uploadFile.url!
+    dialogVisible.value = true
+  }
+
+  const isDisabled = computed(() => {
+    return fileList.value.length >= 4
+  })
+
+  const httpRequest: UploadProps['httpRequest'] = (
+    options: UploadRequestOptions
+  ): XMLHttpRequest | Promise<unknown> => {
+    console.log('httpRequest', options)
+    console.log(fileList.value)
+    let req = {
+      objects: [
+        {
+          fileName: options.file.name,
+          fileType: fileType.FeedImg,
+        },
+      ],
+    }
+
+    if (options.file.type.includes('image')) {
+      req.objects[0].fileType = fileType.FeedImg
+    } else if (options.file.type.includes('video')) {
+      req.objects[0].fileType = fileType.FeedVideo
+    } else if (options.file.type.includes('gif')) {
+      req.objects[0].fileType = fileType.FeedGIF
+    }
+
+    return presign(req).then((res) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('PUT', res.data.urls[0], true)
+      xhr.send(options.file)
+      mediaList.value.push(getPathWithoutQuery(res.data.urls[0]))
+      return xhr
+    })
+  }
+
+  function closeModal() {
+    isOpen.value = false
+  }
+  function openModal(id: string, event: Event) {
+    event.stopPropagation()
+    feedId.value = id
+    isOpen.value = true
+  }
   onMounted(() => {
     feedStore.getFollowingFeeds()
   })
-  function comment(id: string) {
-    console.log('Commented', id)
-  }
-  function report(id: string) {
+  function report(id: string, event: Event) {
+    event.stopPropagation()
     console.log('Reported', id)
   }
-  function like(id: string) {
+  function like(id: string, event: Event) {
+    event.stopPropagation()
     likeFeed(id).then((res) => {
       if (res.code == 200) {
         const feed = feedStore.followingFeeds.find((feed) => feed.id == id)
@@ -23,7 +105,8 @@
       }
     })
   }
-  function unLike(id: string) {
+  function unLike(id: string, event: Event) {
+    event.stopPropagation()
     console.log('Unliked', id)
     unlikeFeed(id).then((res) => {
       if (res.code == 200) {
@@ -105,8 +188,11 @@
     </section>
 
     <footer class="flex flex-wrap gap-10 self-end mt-3.5 w-full max-w-[518px] max-md:max-w-full">
-      <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <div class="flex" @click="comment(feed.id)">
+      <div
+        class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500"
+        @click="openModal(feed.id, $event)"
+      >
+        <div class="flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -121,12 +207,107 @@
               d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
             />
           </svg>
-
-          <span class="my-auto">{{ feed.commentCount }}</span>
+          <span class="my-auto pl-1">{{ feed.commentCount }}</span>
         </div>
       </div>
-      <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <div class="flex" @click="report(feed.id)">
+      <TransitionRoot appear :show="isOpen" as="template">
+        <Dialog class="relative z-10" as="div" :open="isOpen">
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0"
+            enter-to="opacity-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100"
+            leave-to="opacity-0"
+          >
+            <div class="fixed inset-0 bg-black/25" />
+          </TransitionChild>
+
+          <div class="fixed inset-0 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+              <TransitionChild
+                as="template"
+                enter="duration-300 ease-out"
+                enter-from="opacity-0 scale-95"
+                enter-to="opacity-100 scale-100"
+                leave="duration-200 ease-in"
+                leave-from="opacity-100 scale-100"
+                leave-to="opacity-0 scale-95"
+              >
+                <DialogPanel
+                  class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                >
+                  <div class="flex justify-start pb-2" @click="closeModal">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <div class="flex flex-row z-0 w-full box-border">
+                    <!-- 头像 -->
+                    <div class="h-full w-9 mr-2">
+                      <div class="avatar">
+                        <div class="w-10 rounded-full">
+                          <img :src="feed.avatar" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex justify-center flex-1 flex-col box-border pt-1 pb-2">
+                      <el-input
+                        ref="inputRef"
+                        v-model="textarea"
+                        class="w-full"
+                        :autosize="{ minRows: 1, maxRows: 99 }"
+                        maxlength="255"
+                        show-word-limit
+                        true
+                        type="textarea"
+                        placeholder="What is happening?!"
+                        resize="none"
+                      />
+                      <!-- 上传图片 -->
+                      <div class="pt-2">
+                        <el-upload
+                          v-model:file-list="fileList"
+                          action="#"
+                          list-type="picture-card"
+                          accept="image/*"
+                          limit:4
+                          :on-preview="handlePictureCardPreview"
+                          :disabled="isDisabled"
+                          :http-request="httpRequest"
+                        >
+                          <el-icon><Plus /></el-icon>
+                        </el-upload>
+
+                        <el-dialog v-model="dialogVisible">
+                          <img w-full :src="dialogImageUrl" alt="Preview Image" />
+                        </el-dialog>
+                      </div>
+                      <div class="flex justify-end">
+                        <button class="btn mt-2" @click="postComment()">Post</button>
+                      </div>
+                    </div>
+                  </div>
+                </DialogPanel>
+              </TransitionChild>
+            </div>
+          </div>
+        </Dialog>
+      </TransitionRoot>
+
+      <div
+        class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500"
+        @click="report(feed.id, $event)"
+      >
+        <div class="flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -142,11 +323,12 @@
             />
           </svg>
 
-          <span class="my-auto">138K</span>
+          <span class="my-auto pl-1">138K</span>
         </div>
       </div>
+
       <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-        <div v-show="!feed.isLiked" class="flex" @click="like(feed.id)">
+        <div v-show="!feed.isLiked" class="flex" @click="like(feed.id, $event)">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -161,15 +343,15 @@
               d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
             />
           </svg>
-          <span class="my-auto">{{ feed.likeCount }}</span>
+          <span class="my-auto pl-1">{{ feed.likeCount }}</span>
         </div>
-        <div v-show="feed.isLiked" class="flex" @click="unLike(feed.id)">
+        <div v-show="feed.isLiked" class="flex" @click="unLike(feed.id, $event)">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
             <path
               d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"
             />
           </svg>
-          <span class="my-auto">{{ feed.likeCount }}</span>
+          <span class="my-auto pl-1">{{ feed.likeCount }}</span>
         </div>
       </div>
       <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
@@ -188,7 +370,7 @@
           />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
         </svg>
-        <span class="my-auto">{{ feed.viewCount }}</span>
+        <span class="my-auto pl-1">{{ feed.viewCount }}</span>
       </div>
       <div class="flex flex-1 gap-3">
         <svg
