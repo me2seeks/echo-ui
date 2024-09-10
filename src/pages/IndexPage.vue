@@ -2,6 +2,12 @@
   import router from '@/router'
   import { useUserStore } from '@/store/user'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
+  import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
+  import { fileType } from '@/types/upload'
+  import { getPathWithoutQuery } from '@/utils/path'
+  import { presign } from '@/api/upload'
+  import { create } from '@/api/feed'
+
   const userStore = useUserStore()
   const Logout = () => {
     userStore.LoginOut()
@@ -14,6 +20,68 @@
   }
   function openModal() {
     isOpen.value = true
+  }
+
+  const textarea = ref('')
+  function postFeed() {
+    create({
+      content: textarea.value,
+      media0: mediaList.value[0] || '',
+      media1: mediaList.value[1] || '',
+      media2: mediaList.value[2] || '',
+      media3: mediaList.value[3] || '',
+    }).then(() => {
+      userStore.userInfo.feedCount++
+      textarea.value = ''
+      fileList.value = []
+      mediaList.value = []
+      closeModal()
+    })
+  }
+
+  const fileList = ref<UploadUserFile[]>([])
+  const mediaList = ref<string[]>([])
+  const dialogImageUrl = ref('')
+  const dialogVisible = ref(false)
+
+  const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
+    dialogImageUrl.value = uploadFile.url!
+    dialogVisible.value = true
+  }
+
+  const isDisabled = computed(() => {
+    return fileList.value.length >= 4
+  })
+
+  const httpRequest: UploadProps['httpRequest'] = (
+    options: UploadRequestOptions
+  ): XMLHttpRequest | Promise<unknown> => {
+    console.log('httpRequest', options)
+    console.log(fileList.value)
+    let req = {
+      objects: [
+        {
+          fileName: options.file.name,
+          fileType: fileType.FeedImg,
+        },
+      ],
+    }
+
+    if (options.file.type.includes('image')) {
+      req.objects[0].fileType = fileType.FeedImg
+    } else if (options.file.type.includes('video')) {
+      req.objects[0].fileType = fileType.FeedVideo
+    } else if (options.file.type.includes('gif')) {
+      req.objects[0].fileType = fileType.FeedGIF
+    }
+
+    return presign(req).then((res) => {
+      const xhr = new XMLHttpRequest()
+      xhr.open('PUT', res.data.urls[0], true)
+      xhr.send(options.file)
+      mediaList.value.push(getPathWithoutQuery(res.data.urls[0]))
+      return xhr
+    })
   }
 </script>
 <template>
@@ -46,7 +114,7 @@
             <div class="h-4"></div>
             <ul class="menu bg-base-100 rounded-box items-start lg:w-56">
               <li>
-                <a class="h-14 flex items-center" @click="router.push('/')">
+                <a class="h-14 flex items-center" @click="router.push('/home')">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -177,7 +245,52 @@
                       <DialogPanel
                         class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
                       >
-                        <contentBox />
+                        <div class="flex flex-row z-0 w-full box-border">
+                          <!-- 头像 -->
+                          <div class="h-full w-9 mr-2">
+                            <div class="avatar">
+                              <div class="w-10 rounded-full">
+                                <img :src="userStore.userInfo.avatar" />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="flex justify-center flex-1 flex-col box-border pt-1 pb-2">
+                            <el-input
+                              ref="inputRef"
+                              v-model="textarea"
+                              class="w-full"
+                              :autosize="{ minRows: 1, maxRows: 99 }"
+                              maxlength="255"
+                              show-word-limit
+                              true
+                              type="textarea"
+                              placeholder="What is happening?!"
+                              resize="none"
+                            />
+                            <!-- 上传图片 -->
+                            <div class="pt-2">
+                              <el-upload
+                                v-model:file-list="fileList"
+                                action="#"
+                                list-type="picture-card"
+                                accept="image/*"
+                                limit:4
+                                :on-preview="handlePictureCardPreview"
+                                :disabled="isDisabled"
+                                :http-request="httpRequest"
+                              >
+                                <el-icon><Plus /></el-icon>
+                              </el-upload>
+
+                              <el-dialog v-model="dialogVisible">
+                                <img w-full :src="dialogImageUrl" alt="Preview Image" />
+                              </el-dialog>
+                            </div>
+                            <div class="flex justify-end">
+                              <button class="btn mt-2" @click="postFeed">Post</button>
+                            </div>
+                          </div>
+                        </div>
                       </DialogPanel>
                     </TransitionChild>
                   </div>

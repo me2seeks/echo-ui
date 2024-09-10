@@ -13,7 +13,7 @@
       </nav>
     </div>
     <!-- content -->
-    <div>
+    <div class="flex flex-col">
       <div class="flex flex-row z-0 w-full box-border px-4 pt-3 border-b border-gray-700">
         <!-- 头像 -->
         <div class="h-full w-9 mr-2">
@@ -32,6 +32,8 @@
     </div>
   </div>
   <div class="flex-1 w-full h-full">
-    <UserSearch />
+    <div class="w-2/3 items-center px-2">
+      <UserSearch />
+    </div>
   </div>
 </template>
