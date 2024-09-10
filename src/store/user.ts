@@ -2,17 +2,11 @@ import cookie from 'js-cookie'
 import router from '@/router/index'
 import { defineStore } from 'pinia'
 import { detail, follow } from '@/api/user'
-import type { LoginReq } from '@/types/user'
-import type { FollowReq } from '@/types/user'
+import type { LoginReq, FollowReq } from '@/types/user'
+import { Gender } from '@/types/user'
 import { ElMessage } from 'element-plus'
 import { login } from '@/api/user'
 import { getUserCounter } from '@/api/counter'
-
-enum Gender {
-  Unknown = 0,
-  Male = 1,
-  Female = 2,
-}
 
 interface UserInfo {
   id: string

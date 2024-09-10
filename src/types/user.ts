@@ -69,3 +69,13 @@ export interface FollowersResp {
 export interface FollowingsResp {
   followings: string[]
 }
+
+export interface FollowStatusResp {
+  isFollowing: boolean
+}
+
+export enum Gender {
+  Unknown = 0,
+  Male = 1,
+  Female = 2,
+}

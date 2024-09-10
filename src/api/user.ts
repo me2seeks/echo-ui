@@ -13,6 +13,7 @@ import type {
   FollowersResp,
   FollowingsReq,
   FollowingsResp,
+  FollowStatusResp,
 } from '@/types/user'
 
 // @Summary 用户登录
@@ -113,5 +114,16 @@ export const followings = (data: FollowingsReq): Promise<ApiResponse<FollowingsR
     url: '/user/followings',
     method: 'post',
     data,
+  })
+}
+
+// @Summary 获取关注状态
+// @Produce  application/json
+// @Security ApiKeyAuth
+// @Router /user/follow/{userID} [get]
+export const followStatus = (userID: string): Promise<ApiResponse<FollowStatusResp>> => {
+  return service({
+    url: `/user/follow/${userID}`,
+    method: 'get',
   })
 }

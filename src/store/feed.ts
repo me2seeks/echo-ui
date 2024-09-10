@@ -3,24 +3,25 @@ import { getFeedCounter } from '@/api/counter'
 import { detail } from '@/api/user'
 import { formatDistanceToNow } from 'date-fns'
 
-// TODO 将用户单独存储到一个 map 中，避免重复请求
 interface Feed {
   id: string
   content: string
   userID: string
-  nickname: string
-  handle: string
-  avatar: string
-  bio: string
   media0: string
   media1: string
   media2: string
   media3: string
   createTime: string
+  // count
   likeCount: number
   commentCount: number
   viewCount: number
   isLiked: boolean
+  // TODO 从用户列表中获取用户信息
+  nickname: string
+  handle: string
+  avatar: string
+  bio: string
 }
 
 export const useFeedStore = defineStore('feed', () => {

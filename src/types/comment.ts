@@ -24,10 +24,9 @@ export interface GetCommentsByPageResp {
 export interface CreateCommentReq {
   commentID: string
   content: string
-  media0: string
-  media1: string
-  media2: string
-  media3: string
+  media0: string | null
+  media1: string | null
+  media2: string | null
 }
 
 export interface CreateCommentResp {
