@@ -7,12 +7,24 @@
   import { fileType } from '@/types/upload'
   import { createComment } from '@/api/feed'
   import { getPathWithoutQuery } from '@/utils/path'
-
+  import { useUserListStore, type User } from '@/store/userList'
   import router from '@/router'
+  import type { Feed } from '@/store/feed'
+
   const feedStore = useFeedStore()
+  const userListStore = useUserListStore()
   const isOpen = ref(false)
   const textarea = ref('')
   const feedId = ref('')
+
+  const props = defineProps<{
+    content: Feed[]
+  }>()
+
+  async function getUser(id: string): Promise<User | undefined> {
+    const user = await userListStore.Get(id)
+    return user ?? undefined
+  }
 
   function postComment() {
     createComment(feedId.value, {
@@ -22,7 +34,7 @@
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
     }).then(() => {
-      const feed = feedStore.followingFeeds.find((feed) => feed.id == feedId.value)
+      const feed = props.content.find((feed) => feed.id == feedId.value)
       if (feed) {
         feed.commentCount++
       }
@@ -81,18 +93,18 @@
   function closeModal() {
     isOpen.value = false
   }
+
   function openModal(id: string, event: Event) {
     event.stopPropagation()
     feedId.value = id
     isOpen.value = true
   }
-  onMounted(() => {
-    feedStore.getFollowingFeeds()
-  })
+
   function report(id: string, event: Event) {
     event.stopPropagation()
     console.log('Reported', id)
   }
+
   function like(id: string, event: Event) {
     event.stopPropagation()
     likeFeed(id).then((res) => {
@@ -105,6 +117,7 @@
       }
     })
   }
+
   function unLike(id: string, event: Event) {
     event.stopPropagation()
     console.log('Unliked', id)
@@ -118,16 +131,18 @@
       }
     })
   }
-  function goToStatus(handle: string, feedID: string) {
-    router.push(`/${handle}/status/${feedID}`)
+
+  async function goToStatus(userID: string, feedID: string) {
+    const user = await getUser(userID)
+    router.push(`/${user?.handle}}/status/${feedID}`)
   }
 </script>
 <template>
   <article
-    v-for="feed in feedStore.followingFeeds"
+    v-for="feed in props.content"
     :key="feed.id"
     class="flex overflow-hidden flex-col max-w-[568px] box-border py-3 px-4 border-b border-gray-700"
-    @click="goToStatus(feed.handle, feed.id)"
+    @click="goToStatus(feed.userID, feed.id)"
   >
     <section class="flex flex-wrap gap-1.5 flex-col">
       <div class="flex flex-row grow shrink-0 items-start basis-0 w-fit max-md:max-w-full">
@@ -139,14 +154,14 @@
             <div class="flex flex-row">
               <div class="avatar">
                 <div class="w-9 rounded-full">
-                  <img :src="feed.avatar" />
+                  <img :src="userListStore.userList.get(feed.userID)?.avatar" />
                 </div>
               </div>
 
               <div class="flex flex-col gap-1.5 ml-2">
                 <div class="flex flex-row gap-1.5 items-center">
-                  <span class="text-sm font-bold">{{ feed.nickname }}</span>
-                  <span class="text-xs text-zinc-500">{{ feed.handle }}</span>
+                  <span class="text-sm font-bold">{{ userListStore.userList.get(feed.userID)?.nickname }}</span>
+                  <span class="text-xs text-zinc-500">{{ userListStore.userList.get(feed.userID)?.handle }}</span>
                   <span class="text-xs text-zinc-500">·</span>
                   <span class="text-xs text-zinc-500">{{ feed.createTime }}</span>
                 </div>
@@ -157,19 +172,21 @@
             <div class="flex flex-col gap-4">
               <div class="avatar">
                 <div class="w-12 rounded-full">
-                  <img :src="feed.avatar" />
+                  <img :src="userListStore.userList.get(feed.userID)?.avatar" />
                 </div>
               </div>
               <div>
-                <p class="mr-0 font-medium">{{ feed.nickname }}</p>
+                <p class="mr-0 font-medium">
+                  {{ userListStore.userList.get(feed.userID)?.nickname }}
+                </p>
                 <p class="mr-0 text-xs" style="margin: 0; font-size: 14px; color: var(--el-color-info)">
-                  @{{ feed.handle }}
+                  @{{ userListStore.userList.get(feed.userID)?.handle }}
                 </p>
               </div>
-              <FollowBtn :user-id="feed.userID" />
               <p class="demo-rich-content__desc" style="margin: 0">
-                {{ feed.bio }}
+                {{ userListStore.userList.get(feed.userID)?.bio }}
               </p>
+              <FollowBtn :user-id="feed.userID" />
             </div>
           </template>
         </el-popover>
@@ -255,7 +272,7 @@
                     <div class="h-full w-9 mr-2">
                       <div class="avatar">
                         <div class="w-10 rounded-full">
-                          <img :src="feed.avatar" />
+                          <img :src="userListStore.userList.get(feed.userID)?.avatar" />
                         </div>
                       </div>
                     </div>

@@ -1,9 +1,9 @@
-import { listFollowingFeed } from '@/api/feed'
+import { listFollowingFeed, listFeed } from '@/api/feed'
 import { getFeedCounter } from '@/api/counter'
-import { detail } from '@/api/user'
 import { formatDistanceToNow } from 'date-fns'
+import { useUserListStore } from '@/store/userList'
 
-interface Feed {
+export interface Feed {
   id: string
   content: string
   userID: string
@@ -17,24 +17,74 @@ interface Feed {
   commentCount: number
   viewCount: number
   isLiked: boolean
-  // TODO 从用户列表中获取用户信息
-  nickname: string
-  handle: string
-  avatar: string
-  bio: string
 }
 
 export const useFeedStore = defineStore('feed', () => {
   const followingFeeds: Ref<Feed[]> = ref([])
-  const total: Ref<number> = ref(0)
-  const page: Ref<number> = ref(1)
-  const pageSize: Ref<number> = ref(10)
+  const followingFeedsPage: Ref<number> = ref(0)
+  const followingFeedsPageSize: Ref<number> = ref(2)
+  const followingFeedsTotal: Ref<number> = ref(999)
 
-  const getFollowingFeeds = async () => {
-    const res = await listFollowingFeed({
-      page: page.value,
-      pageSize: pageSize.value,
+  const feeds: Ref<Feed[]> = ref([])
+  const feedsPage: Ref<number> = ref(0)
+  const feedsPageSize: Ref<number> = ref(2)
+  const feedsTotal: Ref<number> = ref(999)
+
+  const feedLength = computed(() => feeds.value.length)
+  const followingFeedLength = computed(() => followingFeeds.value.length)
+
+  const userListStore = useUserListStore()
+
+  const GetFeeds = async () => {
+    console.log('feeds:', feedLength.value, feedsTotal.value)
+    if (feeds.value.length >= feedsTotal.value) {
+      console.log('No more feeds to fetch')
+      return
+    }
+    const res = await listFeed({
+      page: feedsPage.value,
+      pageSize: feedsPageSize.value,
     })
+    feedsTotal.value = res.data.total
+    if (Array.isArray(res.data.feed)) {
+      const feedList = res.data.feed.map((feed: any) => ({
+        ...feed,
+        createTime: new Date(feed.createTime * 1000),
+      }))
+      const detailedFeeds = await Promise.all(
+        feedList.map(async (feed: Feed) => {
+          const counter = await getFeedCounter(feed.id)
+          const formattedTime = computed(() => {
+            return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
+          })
+          await userListStore.Set(feed.userID)
+          return {
+            ...feed,
+            createTime: formattedTime.value,
+            likeCount: counter.data.likeCount,
+            commentCount: counter.data.commentCount,
+            viewCount: counter.data.viewCount,
+          }
+        })
+      )
+      feeds.value.push(...detailedFeeds)
+      feedsPage.value++
+    } else {
+      console.error('Unexpected response format:', res.data)
+    }
+  }
+
+  const GetFollowingFeeds = async () => {
+    console.log('followingFeeds:', followingFeedLength.value, followingFeedsTotal.value)
+    if (followingFeeds.value.length >= followingFeedsTotal.value) {
+      console.log('No more following feeds to fetch')
+      return
+    }
+    const res = await listFollowingFeed({
+      page: followingFeedsPage.value,
+      pageSize: followingFeedsPageSize.value,
+    })
+    followingFeedsTotal.value = res.data.total
     if (Array.isArray(res.data.feed)) {
       const feeds = res.data.feed.map((feed: any) => ({
         ...feed,
@@ -43,17 +93,13 @@ export const useFeedStore = defineStore('feed', () => {
       const detailedFeeds = await Promise.all(
         feeds.map(async (feed: Feed) => {
           const counter = await getFeedCounter(feed.id)
-          const user = await detail(feed.userID)
           const formattedTime = computed(() => {
             return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
           })
+          await userListStore.Set(feed.userID)
           return {
             ...feed,
             createTime: formattedTime.value,
-            nickname: user.data.userInfo.nickname,
-            handle: user.data.userInfo.handle,
-            avatar: user.data.userInfo.avatar,
-            bio: user.data.userInfo.bio,
             likeCount: counter.data.likeCount,
             commentCount: counter.data.commentCount,
             viewCount: counter.data.viewCount,
@@ -61,17 +107,24 @@ export const useFeedStore = defineStore('feed', () => {
         })
       )
       followingFeeds.value.push(...detailedFeeds)
+      followingFeedsPage.value++
     } else {
       console.error('Unexpected response format:', res.data)
     }
-    total.value = res.data.total
   }
 
   return {
     followingFeeds,
-    total,
-    page,
-    pageSize,
-    getFollowingFeeds,
+    feeds,
+    followingFeedsPage,
+    followingFeedsPageSize,
+    followingFeedsTotal,
+    feedsPage,
+    feedsPageSize,
+    feedsTotal,
+
+    feedLength,
+    GetFollowingFeeds,
+    GetFeeds,
   }
 })

@@ -44,6 +44,7 @@ export interface userInfo {
   sex: number
   avatar: string
   bio: string
+  isFollow: boolean
 }
 
 export interface RegisterResp {

@@ -1,6 +1,56 @@
 <script setup lang="ts">
-  import { useUserStore } from '@/store/user'
-  const userStore = useUserStore()
+  import { useMainStore } from '@/store/index'
+  import { useUserListStore } from '@/store/userList'
+  import type { User } from '@/store/userList'
+  import { useFeedStore } from '@/store/feed'
+
+  const userListStore = useUserListStore()
+  const feedStore = useFeedStore()
+
+  const userInfo: Ref<User | undefined> = ref()
+  const selectedTab = ref(true)
+
+  const content = computed(() => {
+    if (selectedTab.value) {
+      if (feedStore.feeds.length === 0) {
+        feedStore.GetFeeds()
+      }
+      return feedStore.feeds
+    } else {
+      if (feedStore.followingFeeds.length === 0) {
+        feedStore.GetFollowingFeeds()
+      }
+      return feedStore.followingFeeds
+    }
+  })
+
+  onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+    if (!userInfo.value) {
+      userListStore.Get(useMainStore().userID).then((user: User | null) => {
+        if (user) {
+          userInfo.value = user
+        }
+      })
+    }
+  })
+
+  const handleScroll = () => {
+    const bottomOfWindow = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1
+    if (bottomOfWindow) {
+      if (selectedTab.value) {
+        feedStore.GetFeeds()
+      } else {
+        feedStore.GetFollowingFeeds()
+      }
+    }
+  }
+
+  onMounted(() => {})
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
 </script>
 <template>
   <div class="flex flex-col z-1 flex-grow max-w-[566px] h-full border-r border-gray-700">
@@ -8,8 +58,12 @@
       class="bg-base-500 text-base-content sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] shadow-sm border-b border-gray-700"
     >
       <nav class="navbar w-full p-0">
-        <div class="flex-1 h-full items-center justify-center hover:bg-gray-200">For you</div>
-        <div class="flex-1 h-full items-center justify-center hover:bg-gray-200">Following</div>
+        <div class="flex-1 h-full items-center justify-center hover:bg-gray-200" @click="selectedTab = true">
+          For you
+        </div>
+        <div class="flex-1 h-full items-center justify-center hover:bg-gray-200" @click="selectedTab = false">
+          Following
+        </div>
       </nav>
     </div>
     <!-- content -->
@@ -19,7 +73,7 @@
         <div class="h-full w-9 mr-2">
           <div class="avatar">
             <div class="w-10 rounded-full">
-              <img :src="userStore.userInfo.avatar" />
+              <img :src="userInfo?.avatar" />
             </div>
           </div>
         </div>
@@ -28,7 +82,7 @@
         </div>
       </div>
       <!-- feeds -->
-      <FeedList />
+      <FeedList :content />
     </div>
   </div>
   <div class="flex-1 w-full h-full">

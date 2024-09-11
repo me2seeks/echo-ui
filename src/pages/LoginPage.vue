@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import router from '@/router'
-  import { useUserStore } from '@/store/user'
   import { ElMessage } from 'element-plus'
+  import { useMainStore } from '@/store/index'
 
-  const userStore = useUserStore()
+  const main = useMainStore()
   const email = ref<string>('')
   const password = ref<string>('')
   const isSubmitting = ref<boolean>(false)
@@ -14,9 +14,9 @@
         return
       }
       isSubmitting.value = true
-      await userStore.LoginIn({ email: email.value, password: password.value }).then(() => {
+      await main.LoginIn({ email: email.value, password: password.value }).then(() => {
         ElMessage('登录成功')
-        router.push('/')
+        router.push({ path: '/', replace: true })
       })
     } catch (error) {
       console.error('Login failed', error)

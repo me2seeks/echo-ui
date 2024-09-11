@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import router from '@/router'
-  import { useUserStore } from '@/store/user'
+
+  import { useMainStore } from '@/store/index'
+  import { useUserListStore } from '@/store/userList'
+  import type { User } from '@/store/userList'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
   import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
   import { fileType } from '@/types/upload'
@@ -8,9 +11,23 @@
   import { presign } from '@/api/upload'
   import { create } from '@/api/feed'
 
-  const userStore = useUserStore()
+  const userListStore = useUserListStore()
+  const mainStore = useMainStore()
+
+  const userInfo: Ref<User | undefined> = ref()
+
+  onMounted(() => {
+    if (!userInfo.value) {
+      userListStore.Get(mainStore.userID).then((user: User | null) => {
+        if (user) {
+          userInfo.value = user
+        }
+      })
+    }
+  })
+
   const Logout = () => {
-    userStore.LoginOut()
+    mainStore.LoginOut()
     router.push('/login')
   }
   const isOpen = ref(false)
@@ -31,7 +48,9 @@
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
     }).then(() => {
-      userStore.userInfo.feedCount++
+      if (userInfo.value) {
+        userInfo.value.feedCount++
+      }
       textarea.value = ''
       fileList.value = []
       mediaList.value = []
@@ -192,7 +211,7 @@
                 </a>
               </li>
               <li>
-                <a class="h-14 flex items-center" @click="router.push(`/profile/${userStore.userInfo.handle}`)">
+                <a class="h-14 flex items-center" @click="router.push(`/profile/${userInfo?.handle}`)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -250,7 +269,7 @@
                           <div class="h-full w-9 mr-2">
                             <div class="avatar">
                               <div class="w-10 rounded-full">
-                                <img :src="userStore.userInfo.avatar" />
+                                <img :src="userInfo?.avatar" />
                               </div>
                             </div>
                           </div>
@@ -303,13 +322,13 @@
           <button class="btn rounded-3xl bg-base-100 h-14">
             <div class="avatar">
               <div class="w-10 rounded-full">
-                <img :src="userStore.userInfo.avatar" />
+                <img :src="userInfo?.avatar" />
               </div>
             </div>
             <div class="w-20">
               <div class="ml-2 text-sm font-bold items-start flex flex-col">
-                <div class="line-clamp-1">{{ userStore.userInfo.nickname }}</div>
-                <div class="line-clamp-1 text-xs">@{{ userStore.userInfo.handle }}</div>
+                <div class="line-clamp-1">{{ userInfo?.nickname }}</div>
+                <div class="line-clamp-1 text-xs">@{{ userInfo?.handle }}</div>
               </div>
             </div>
             <div class="w-8">

@@ -6,9 +6,35 @@
   import { fileType } from '@/types/upload'
   import { create } from '@/api/feed'
   import { getPathWithoutQuery } from '@/utils/path'
-  import { useUserStore } from '@/store/user'
+  import { useMainStore } from '@/store/index'
+  import { useUserListStore } from '@/store/userList'
+  import type { Gender } from '@/types/user'
+  import type { User } from '@/store/userList'
 
-  const userStore = useUserStore()
+  const userListStore = useUserListStore()
+
+  const userInfo: Ref<User> = ref({
+    handle: '',
+    nickname: '',
+    avatar: '',
+    feedCount: 0,
+    followerCount: 0,
+    followingCount: 0,
+    email: '',
+    bio: '',
+    sex: 0 as Gender,
+    isFollow: false,
+  })
+
+  onMounted(() => {
+    if (!userInfo.value) {
+      userListStore.Get(useMainStore().userID).then((user: User | null) => {
+        if (user) {
+          userInfo.value = user
+        }
+      })
+    }
+  })
 
   const textarea = ref('')
   function postFeed() {
@@ -19,7 +45,7 @@
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
     }).then(() => {
-      userStore.userInfo.feedCount++
+      userInfo.value.feedCount++
       textarea.value = ''
       fileList.value = []
       mediaList.value = []

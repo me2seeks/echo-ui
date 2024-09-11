@@ -24,6 +24,7 @@
     "element-plus": "^2.8.1",
     "heroicons": "^2.1.5",
     "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "pinia": "2.2.0",
     "vue": "3.4.29",
     "vue-router": "4.4.0"
