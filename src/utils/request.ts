@@ -1,4 +1,4 @@
-import { useUserStore } from '@/store/user'
+import { useMainStore } from '@/store/index'
 import axios from 'axios'
 
 const service = axios.create({
@@ -8,11 +8,11 @@ const service = axios.create({
 })
 
 service.interceptors.request.use((config) => {
-  const userStore = useUserStore()
+  const main = useMainStore()
   const headers = new axios.AxiosHeaders(config.headers)
 
   headers.set('Content-Type', 'application/json')
-  headers.set('Authorization', `Bearer ${userStore.token}`)
+  headers.set('Authorization', `Bearer ${main.token}`)
   config.headers = headers
   console.log(config)
   return config

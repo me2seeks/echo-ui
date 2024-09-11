@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/store/user'
+import { useMainStore } from '@/store/index'
 
 import DemoPage from '@/pages/DemoPage.vue'
 import IndexPage from '@/pages/IndexPage.vue'
@@ -79,11 +79,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  if (to.path === '/login' && userStore.isLoggedIn) {
+  const mainStore = useMainStore()
+  if (to.path === '/login' && mainStore.isLoggedIn) {
     next({ path: '/', replace: true })
-  } else if (to.path !== '/login' && !userStore.isLoggedIn) {
-    useUserStore().redirectPath = to.path
+  } else if (to.path !== '/login' && !mainStore.isLoggedIn) {
     next({ path: '/login', replace: true })
   } else {
     next()
