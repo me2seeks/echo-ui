@@ -21,13 +21,13 @@ export interface Feed {
 
 export const useFeedStore = defineStore('feed', () => {
   const followingFeeds: Ref<Feed[]> = ref([])
-  const followingFeedsPage: Ref<number> = ref(0)
-  const followingFeedsPageSize: Ref<number> = ref(2)
+  const followingFeedsPage: Ref<number> = ref(1)
+  const followingFeedsPageSize: Ref<number> = ref(1)
   const followingFeedsTotal: Ref<number> = ref(999)
 
   const feeds: Ref<Feed[]> = ref([])
-  const feedsPage: Ref<number> = ref(0)
-  const feedsPageSize: Ref<number> = ref(2)
+  const feedsPage: Ref<number> = ref(1)
+  const feedsPageSize: Ref<number> = ref(1)
   const feedsTotal: Ref<number> = ref(999)
 
   const feedLength = computed(() => feeds.value.length)
@@ -45,7 +45,6 @@ export const useFeedStore = defineStore('feed', () => {
       page: feedsPage.value,
       pageSize: feedsPageSize.value,
     })
-    feedsTotal.value = res.data.total
     if (Array.isArray(res.data.feed)) {
       const feedList = res.data.feed.map((feed: any) => ({
         ...feed,
@@ -68,6 +67,7 @@ export const useFeedStore = defineStore('feed', () => {
         })
       )
       feeds.value.push(...detailedFeeds)
+      feedsTotal.value = res.data.total
       feedsPage.value++
     } else {
       console.error('Unexpected response format:', res.data)
@@ -84,7 +84,6 @@ export const useFeedStore = defineStore('feed', () => {
       page: followingFeedsPage.value,
       pageSize: followingFeedsPageSize.value,
     })
-    followingFeedsTotal.value = res.data.total
     if (Array.isArray(res.data.feed)) {
       const feeds = res.data.feed.map((feed: any) => ({
         ...feed,
@@ -107,6 +106,7 @@ export const useFeedStore = defineStore('feed', () => {
         })
       )
       followingFeeds.value.push(...detailedFeeds)
+      followingFeedsTotal.value = res.data.total
       followingFeedsPage.value++
     } else {
       console.error('Unexpected response format:', res.data)

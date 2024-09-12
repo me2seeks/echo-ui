@@ -11,19 +11,36 @@
   const selectedTab = ref(true)
 
   const content = computed(() => {
-    if (selectedTab.value) {
-      console.log('get feeds')
-      feedStore.GetFeeds()
+    return selectedTab.value ? feedStore.feeds : feedStore.followingFeeds
+  })
 
-      return feedStore.feeds
+  watch(
+    selectedTab,
+    () => {
+      fetchFeeds()
+    },
+    { once: true }
+  )
+
+  const fetchFeeds = () => {
+    if (selectedTab.value) {
+      feedStore.GetFeeds()
     } else {
       feedStore.GetFollowingFeeds()
     }
-    return feedStore.followingFeeds
-  })
+  }
+
+  const handleScroll = () => {
+    const bottomOfWindow = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1
+    if (bottomOfWindow) {
+      fetchFeeds()
+    }
+  }
 
   onMounted(() => {
+    fetchFeeds()
     window.addEventListener('scroll', handleScroll)
+
     if (!userInfo.value) {
       userListStore.Get(useMainStore().userID).then((user: User | null) => {
         if (user) {
@@ -32,17 +49,6 @@
       })
     }
   })
-
-  const handleScroll = () => {
-    const bottomOfWindow = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1
-    if (bottomOfWindow) {
-      if (selectedTab.value) {
-        feedStore.GetFeeds()
-      } else {
-        feedStore.GetFollowingFeeds()
-      }
-    }
-  }
 
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
