@@ -12,16 +12,14 @@
 
   const content = computed(() => {
     if (selectedTab.value) {
-      if (feedStore.feeds.length === 0) {
-        feedStore.GetFeeds()
-      }
+      console.log('get feeds')
+      feedStore.GetFeeds()
+
       return feedStore.feeds
     } else {
-      if (feedStore.followingFeeds.length === 0) {
-        feedStore.GetFollowingFeeds()
-      }
-      return feedStore.followingFeeds
+      feedStore.GetFollowingFeeds()
     }
+    return feedStore.followingFeeds
   })
 
   onMounted(() => {
@@ -45,8 +43,6 @@
       }
     }
   }
-
-  onMounted(() => {})
 
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
