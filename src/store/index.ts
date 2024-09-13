@@ -1,8 +1,8 @@
 import cookie from 'js-cookie'
-import router from '@/router/index'
+import router from '@/router'
 import { defineStore } from 'pinia'
-import { follow } from '@/api/user'
-import type { LoginReq, FollowReq } from '@/types/user'
+import { follow, unfollow } from '@/api/user'
+import type { LoginReq, FollowReq, UnfollowReq } from '@/types/user'
 import { ElMessage } from 'element-plus'
 import { login } from '@/api/user'
 import { jwtDecode } from 'jwt-decode'
@@ -31,9 +31,9 @@ export const useMainStore = defineStore('main', () => {
     ElMessage.success('登录成功')
     if (redirectPath.value) {
       router.push({ path: redirectPath.value, replace: true })
-    } else {
-      router.push({ name: 'home', replace: true })
+      return
     }
+    router.push({ name: 'home', replace: true })
     return
   }
 
@@ -48,8 +48,8 @@ export const useMainStore = defineStore('main', () => {
   }
 
   const UnFollow = async (id: string) => {
-    const followReq: FollowReq = { userID: id }
-    await follow(followReq)
+    const unFollowReq: UnfollowReq = { userID: id }
+    await unfollow(unFollowReq)
     userStore.Get(id).then((res) => {
       if (res) {
         res.followerCount--
@@ -59,7 +59,7 @@ export const useMainStore = defineStore('main', () => {
 
   const LoginOut = async () => {
     await clearStorage()
-    router.push({ name: 'Login', replace: true })
+    router.push({ name: 'login', replace: true })
     window.location.reload()
   }
 

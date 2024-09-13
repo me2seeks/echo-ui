@@ -21,6 +21,7 @@ const routes = [
     children: [
       {
         path: 'home',
+        name: 'home',
         component: HomePage,
         meta: {
           title: 'Home',
@@ -65,7 +66,7 @@ const routes = [
   },
   {
     path: '/login/',
-    name: 'Login',
+    name: 'login',
     component: LoginPage,
     meta: {
       title: 'Login',

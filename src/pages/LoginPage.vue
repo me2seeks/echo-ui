@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import router from '@/router'
   import { ElMessage } from 'element-plus'
   import { useMainStore } from '@/store/index'
 
@@ -16,7 +15,6 @@
       isSubmitting.value = true
       await main.LoginIn({ email: email.value, password: password.value }).then(() => {
         ElMessage('登录成功')
-        router.push({ path: '/', replace: true })
       })
     } catch (error) {
       console.error('Login failed', error)

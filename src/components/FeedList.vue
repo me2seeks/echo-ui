@@ -10,9 +10,11 @@
   import { useUserStore, type User } from '@/store/user'
   import router from '@/router'
   import type { Feed } from '@/store/feed'
+  import { useMainStore } from '@/store/index'
 
   const feedStore = useFeedStore()
   const userStore = useUserStore()
+  const mainStore = useMainStore()
   const isOpen = ref(false)
   const textarea = ref('')
   const feedId = ref('')
@@ -147,6 +149,7 @@
     <section class="flex flex-wrap gap-1.5 flex-col">
       <div class="flex flex-row grow shrink-0 items-start basis-0 w-fit max-md:max-w-full">
         <el-popover
+          :disabled="mainStore.userID == feed.userID"
           :width="300"
           popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
         >
@@ -186,7 +189,7 @@
               <p class="demo-rich-content__desc" style="margin: 0">
                 {{ userStore.userMap.get(feed.userID)?.bio }}
               </p>
-              <FollowBtn :user-id="feed.userID" />
+              <FollowBtn :user-id="feed.userID" :is-follow="userStore.userMap.get(feed.userID)?.isFollow" />
             </div>
           </template>
         </el-popover>
@@ -272,7 +275,7 @@
                     <div class="h-full w-9 mr-2">
                       <div class="avatar">
                         <div class="w-10 rounded-full">
-                          <img :src="userStore.userMap.get(feed.userID)?.avatar" />
+                          <img :src="userStore.userMap.get(mainStore.userID)?.avatar" />
                         </div>
                       </div>
                     </div>

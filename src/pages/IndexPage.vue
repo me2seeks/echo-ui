@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import router from '@/router'
-
   import { useMainStore } from '@/store/index'
   import { useUserStore, type User } from '@/store/user'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
@@ -27,7 +26,6 @@
 
   const Logout = () => {
     mainStore.LoginOut()
-    router.push('/login')
   }
   const isOpen = ref(false)
 

@@ -72,9 +72,8 @@ export const update = (data: UpdateReq) => {
 // @Router /user/follow [post]
 export const follow = (data: FollowReq) => {
   return service({
-    url: '/user/follow',
+    url: `/user/follow/${data.userID}`,
     method: 'post',
-    data,
   })
 }
 
@@ -85,9 +84,8 @@ export const follow = (data: FollowReq) => {
 // @Router /user/unfollow [post]
 export const unfollow = (data: UnfollowReq) => {
   return service({
-    url: '/user/unfollow',
+    url: `/user/unfollow/${data.userID}`,
     method: 'post',
-    data,
   })
 }
 
@@ -98,9 +96,8 @@ export const unfollow = (data: UnfollowReq) => {
 // @Router /user/followers [post]
 export const followers = (data: FollowersReq): Promise<ApiResponse<FollowersResp>> => {
   return service({
-    url: '/user/followers',
-    method: 'post',
-    data,
+    url: `/user/followers/${data.userID}`,
+    method: 'get',
   })
 }
 
@@ -111,8 +108,8 @@ export const followers = (data: FollowersReq): Promise<ApiResponse<FollowersResp
 // @Router /user/followings [post]
 export const followings = (data: FollowingsReq): Promise<ApiResponse<FollowingsResp>> => {
   return service({
-    url: '/user/followings',
-    method: 'post',
+    url: `/user/followings/${data.userID}`,
+    method: 'get',
     data,
   })
 }

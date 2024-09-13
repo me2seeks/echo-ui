@@ -17,7 +17,7 @@ export interface User {
   feedCount: number
 }
 
-export const useUserStore = defineStore('userMap', () => {
+export const useUserStore = defineStore('user', () => {
   const userMap: Ref<Map<string, User>> = ref(new Map())
 
   const fetchUserData = async (id: string): Promise<User | null> => {
