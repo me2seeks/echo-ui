@@ -1,7 +1,7 @@
 import { listFollowingFeed, listFeed } from '@/api/feed'
 import { getFeedCounter } from '@/api/counter'
 import { formatDistanceToNow } from 'date-fns'
-import { useUserListStore } from '@/store/userList'
+import { useUserStore } from '@/store/user'
 
 export interface Feed {
   id: string
@@ -33,7 +33,7 @@ export const useFeedStore = defineStore('feed', () => {
   const feedLength = computed(() => feeds.value.length)
   const followingFeedLength = computed(() => followingFeeds.value.length)
 
-  const userListStore = useUserListStore()
+  const userStore = useUserStore()
 
   const GetFeeds = async () => {
     console.log('feeds:', feedLength.value, feedsTotal.value)
@@ -56,7 +56,7 @@ export const useFeedStore = defineStore('feed', () => {
           const formattedTime = computed(() => {
             return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
           })
-          await userListStore.Set(feed.userID)
+          await userStore.Set(feed.userID)
           return {
             ...feed,
             createTime: formattedTime.value,
@@ -95,7 +95,7 @@ export const useFeedStore = defineStore('feed', () => {
           const formattedTime = computed(() => {
             return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
           })
-          await userListStore.Set(feed.userID)
+          await userStore.Set(feed.userID)
           return {
             ...feed,
             createTime: formattedTime.value,

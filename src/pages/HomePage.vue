@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { useMainStore } from '@/store/index'
-  import { useUserListStore } from '@/store/userList'
-  import type { User } from '@/store/userList'
+  import { useUserStore, type User } from '@/store/user'
+
   import { useFeedStore } from '@/store/feed'
 
-  const userListStore = useUserListStore()
+  const userStore = useUserStore()
   const feedStore = useFeedStore()
 
   const userInfo: Ref<User | undefined> = ref()
@@ -42,7 +42,7 @@
     window.addEventListener('scroll', handleScroll)
 
     if (!userInfo.value) {
-      userListStore.Get(useMainStore().userID).then((user: User | null) => {
+      userStore.Get(useMainStore().userID).then((user: User | null) => {
         if (user) {
           userInfo.value = user
         }

@@ -6,11 +6,10 @@
   import { create } from '@/api/feed'
   import { getPathWithoutQuery } from '@/utils/path'
   import { useMainStore } from '@/store/index'
-  import { useUserListStore } from '@/store/userList'
+  import { useUserStore, type User } from '@/store/user'
   import type { Gender } from '@/types/user'
-  import type { User } from '@/store/userList'
 
-  const userListStore = useUserListStore()
+  const userStore = useUserStore()
 
   const userInfo: Ref<User> = ref({
     handle: '',
@@ -27,7 +26,7 @@
 
   onMounted(() => {
     if (!userInfo.value) {
-      userListStore.Get(useMainStore().userID).then((user: User | null) => {
+      userStore.Get(useMainStore().userID).then((user: User | null) => {
         if (user) {
           userInfo.value = user
         }

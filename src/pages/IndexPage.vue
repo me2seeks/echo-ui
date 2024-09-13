@@ -2,8 +2,7 @@
   import router from '@/router'
 
   import { useMainStore } from '@/store/index'
-  import { useUserListStore } from '@/store/userList'
-  import type { User } from '@/store/userList'
+  import { useUserStore, type User } from '@/store/user'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
   import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
   import { fileType } from '@/types/upload'
@@ -11,14 +10,14 @@
   import { presign } from '@/api/upload'
   import { create } from '@/api/feed'
 
-  const userListStore = useUserListStore()
+  const userStore = useUserStore()
   const mainStore = useMainStore()
 
   const userInfo: Ref<User | undefined> = ref()
 
   onMounted(() => {
     if (!userInfo.value) {
-      userListStore.Get(mainStore.userID).then((user: User | null) => {
+      userStore.Get(mainStore.userID).then((user: User | null) => {
         if (user) {
           userInfo.value = user
         }

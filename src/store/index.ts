@@ -6,14 +6,14 @@ import type { LoginReq, FollowReq } from '@/types/user'
 import { ElMessage } from 'element-plus'
 import { login } from '@/api/user'
 import { jwtDecode } from 'jwt-decode'
-import { useUserListStore } from '@/store/userList'
+import { useUserStore } from '@/store/user'
 
 interface JwtPayload {
   jwtUserId: string
 }
 
 export const useMainStore = defineStore('main', () => {
-  const userList = useUserListStore()
+  const userStore = useUserStore()
   const token: Ref<string> = ref(window.localStorage.getItem('token') || cookie.get('x-token') || '')
   const userID: Ref<string> = ref(window.localStorage.getItem('userID') || cookie.get('userID') || '')
   const isLoggedIn = computed(() => !!token.value)
@@ -27,7 +27,7 @@ export const useMainStore = defineStore('main', () => {
     }
     console.log(jwtDecode<JwtPayload>(res.data.accessToken).jwtUserId)
     setUser(res.data.accessToken, jwtDecode<JwtPayload>(res.data.accessToken).jwtUserId, res.data.accessExpire)
-    userList.Set(userID.value)
+    userStore.Set(userID.value)
     ElMessage.success('登录成功')
     if (redirectPath.value) {
       router.push({ path: redirectPath.value, replace: true })
@@ -40,7 +40,7 @@ export const useMainStore = defineStore('main', () => {
   const Follow = async (id: string) => {
     const followReq: FollowReq = { userID: id }
     await follow(followReq)
-    userList.Get(id).then((res) => {
+    userStore.Get(id).then((res) => {
       if (res) {
         res.followerCount++
       }
@@ -50,7 +50,7 @@ export const useMainStore = defineStore('main', () => {
   const UnFollow = async (id: string) => {
     const followReq: FollowReq = { userID: id }
     await follow(followReq)
-    userList.Get(id).then((res) => {
+    userStore.Get(id).then((res) => {
       if (res) {
         res.followerCount--
       }
@@ -75,7 +75,7 @@ export const useMainStore = defineStore('main', () => {
 
   const RestoreSession = async () => {
     if (token.value && userID.value === '') {
-      await userList.Get(userID.value)
+      await userStore.Get(userID.value)
     }
   }
 

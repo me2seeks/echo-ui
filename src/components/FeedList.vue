@@ -7,12 +7,12 @@
   import { fileType } from '@/types/upload'
   import { createComment } from '@/api/feed'
   import { getPathWithoutQuery } from '@/utils/path'
-  import { useUserListStore, type User } from '@/store/userList'
+  import { useUserStore, type User } from '@/store/user'
   import router from '@/router'
   import type { Feed } from '@/store/feed'
 
   const feedStore = useFeedStore()
-  const userListStore = useUserListStore()
+  const userStore = useUserStore()
   const isOpen = ref(false)
   const textarea = ref('')
   const feedId = ref('')
@@ -22,7 +22,7 @@
   }>()
 
   async function getUser(id: string): Promise<User | undefined> {
-    const user = await userListStore.Get(id)
+    const user = await userStore.Get(id)
     return user ?? undefined
   }
 
@@ -154,14 +154,14 @@
             <div class="flex flex-row">
               <div class="avatar">
                 <div class="w-9 rounded-full">
-                  <img :src="userListStore.userList.get(feed.userID)?.avatar" />
+                  <img :src="userStore.userMap.get(feed.userID)?.avatar" />
                 </div>
               </div>
 
               <div class="flex flex-col gap-1.5 ml-2">
                 <div class="flex flex-row gap-1.5 items-center">
-                  <span class="text-sm font-bold">{{ userListStore.userList.get(feed.userID)?.nickname }}</span>
-                  <span class="text-xs text-zinc-500">{{ userListStore.userList.get(feed.userID)?.handle }}</span>
+                  <span class="text-sm font-bold">{{ userStore.userMap.get(feed.userID)?.nickname }}</span>
+                  <span class="text-xs text-zinc-500">{{ userStore.userMap.get(feed.userID)?.handle }}</span>
                   <span class="text-xs text-zinc-500">·</span>
                   <span class="text-xs text-zinc-500">{{ feed.createTime }}</span>
                 </div>
@@ -172,19 +172,19 @@
             <div class="flex flex-col gap-4">
               <div class="avatar">
                 <div class="w-12 rounded-full">
-                  <img :src="userListStore.userList.get(feed.userID)?.avatar" />
+                  <img :src="userStore.userMap.get(feed.userID)?.avatar" />
                 </div>
               </div>
               <div>
                 <p class="mr-0 font-medium">
-                  {{ userListStore.userList.get(feed.userID)?.nickname }}
+                  {{ userStore.userMap.get(feed.userID)?.nickname }}
                 </p>
                 <p class="mr-0 text-xs" style="margin: 0; font-size: 14px; color: var(--el-color-info)">
-                  @{{ userListStore.userList.get(feed.userID)?.handle }}
+                  @{{ userStore.userMap.get(feed.userID)?.handle }}
                 </p>
               </div>
               <p class="demo-rich-content__desc" style="margin: 0">
-                {{ userListStore.userList.get(feed.userID)?.bio }}
+                {{ userStore.userMap.get(feed.userID)?.bio }}
               </p>
               <FollowBtn :user-id="feed.userID" />
             </div>
@@ -272,7 +272,7 @@
                     <div class="h-full w-9 mr-2">
                       <div class="avatar">
                         <div class="w-10 rounded-full">
-                          <img :src="userListStore.userList.get(feed.userID)?.avatar" />
+                          <img :src="userStore.userMap.get(feed.userID)?.avatar" />
                         </div>
                       </div>
                     </div>

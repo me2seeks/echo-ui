@@ -17,8 +17,8 @@ export interface User {
   feedCount: number
 }
 
-export const useUserListStore = defineStore('userList', () => {
-  const userList: Ref<Map<string, User>> = ref(new Map())
+export const useUserStore = defineStore('userMap', () => {
+  const userMap: Ref<Map<string, User>> = ref(new Map())
 
   const fetchUserData = async (id: string): Promise<User | null> => {
     try {
@@ -35,7 +35,7 @@ export const useUserListStore = defineStore('userList', () => {
       }
 
       const user: User = { ...res.data.userInfo, ...counter.data }
-      userList.value.set(id, user)
+      userMap.value.set(id, user)
       return user
     } catch (error) {
       console.error(`An error occurred while fetching user data for ID ${id}:`, error)
@@ -44,8 +44,8 @@ export const useUserListStore = defineStore('userList', () => {
   }
 
   const Get = async (id: string): Promise<User | null> => {
-    if (userList.value.has(id)) {
-      return userList.value.get(id) || null
+    if (userMap.value.has(id)) {
+      return userMap.value.get(id) || null
     } else {
       return await fetchUserData(id)
     }
@@ -56,7 +56,7 @@ export const useUserListStore = defineStore('userList', () => {
   }
 
   return {
-    userList,
+    userMap,
     fetchUserData,
     Get,
     Set,

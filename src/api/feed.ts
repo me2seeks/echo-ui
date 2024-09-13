@@ -36,7 +36,7 @@ export const listFeedByUserID = (userID: string, data: GetFeedsByPageReq): Promi
 //@Param pageSize query int32 true "Page size"
 //@Router /feed/{feedID}/comment [get]
 export const listComment = (
-  feedID: number,
+  feedID: string,
   data: GetFeedCommentsByPageReq
 ): Promise<ApiResponse<GetFeedCommentsByPageResp>> => {
   return service({
