@@ -1,4 +1,4 @@
-import { listFollowingFeed, listFeed } from '@/api/feed'
+import { listFollowingFeed, listFeed, getFeedByID } from '@/api/feed'
 import { getFeedCounter } from '@/api/counter'
 import { formatDistanceToNow } from 'date-fns'
 import { useUserStore } from '@/store/user'
@@ -17,10 +17,11 @@ export interface Feed {
   commentCount: number
   viewCount: number
   isLiked: boolean
+
+  type: 'recommended' | 'followed'
 }
 
 export const useFeedStore = defineStore('feed', () => {
-  const followingFeeds: Ref<Feed[]> = ref([])
   const followingFeedsPage: Ref<number> = ref(1)
   const followingFeedsPageSize: Ref<number> = ref(1)
   const followingFeedsTotal: Ref<number> = ref(999)
@@ -30,8 +31,8 @@ export const useFeedStore = defineStore('feed', () => {
   const feedsPageSize: Ref<number> = ref(1)
   const feedsTotal: Ref<number> = ref(999)
 
-  const feedLength = computed(() => feeds.value.length)
-  const followingFeedLength = computed(() => followingFeeds.value.length)
+  const feedLength: Ref<number> = ref(0)
+  const followingFeedLength: Ref<number> = ref(0)
 
   const userStore = useUserStore()
 
@@ -46,12 +47,13 @@ export const useFeedStore = defineStore('feed', () => {
       pageSize: feedsPageSize.value,
     })
     if (Array.isArray(res.data.feed)) {
-      const feedList = res.data.feed.map((feed: any) => ({
+      let detailedFeeds = res.data.feed.map((feed: any) => ({
         ...feed,
+        type: 'recommended',
         createTime: new Date(feed.createTime * 1000),
       }))
-      const detailedFeeds = await Promise.all(
-        feedList.map(async (feed: Feed) => {
+      detailedFeeds = await Promise.all(
+        detailedFeeds.map(async (feed: Feed) => {
           const counter = await getFeedCounter(feed.id)
           const formattedTime = computed(() => {
             return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
@@ -66,7 +68,9 @@ export const useFeedStore = defineStore('feed', () => {
           }
         })
       )
+      feedLength.value += detailedFeeds.length
       feeds.value.push(...detailedFeeds)
+      feeds.value.sort((feedA, feedB) => feedB.id.localeCompare(feedA.id))
       feedsTotal.value = res.data.total
       feedsPage.value++
     } else {
@@ -76,7 +80,7 @@ export const useFeedStore = defineStore('feed', () => {
 
   const GetFollowingFeeds = async () => {
     console.log('followingFeeds:', followingFeedLength.value, followingFeedsTotal.value)
-    if (followingFeeds.value.length >= followingFeedsTotal.value) {
+    if (followingFeedLength.value >= followingFeedsTotal.value) {
       console.log('No more following feeds to fetch')
       return
     }
@@ -85,12 +89,13 @@ export const useFeedStore = defineStore('feed', () => {
       pageSize: followingFeedsPageSize.value,
     })
     if (Array.isArray(res.data.feed)) {
-      const feeds = res.data.feed.map((feed: any) => ({
+      let detailedFeeds = res.data.feed.map((feed: any) => ({
         ...feed,
+        type: 'followed',
         createTime: new Date(feed.createTime * 1000),
       }))
-      const detailedFeeds = await Promise.all(
-        feeds.map(async (feed: Feed) => {
+      detailedFeeds = await Promise.all(
+        detailedFeeds.map(async (feed: Feed) => {
           const counter = await getFeedCounter(feed.id)
           const formattedTime = computed(() => {
             return formatDistanceToNow(new Date(feed.createTime), { addSuffix: true })
@@ -105,7 +110,18 @@ export const useFeedStore = defineStore('feed', () => {
           }
         })
       )
-      followingFeeds.value.push(...detailedFeeds)
+      // 使用 Set 进行去重
+      const feedSet = new Set(detailedFeeds.map((feed) => feed.id))
+      detailedFeeds.forEach((feed) => {
+        if (!feedSet.has(feed.id)) {
+          feeds.value.push(feed)
+          feedSet.add(feed.id)
+        }
+      })
+
+      followingFeedLength.value += detailedFeeds.length
+      feeds.value.push(...detailedFeeds)
+      feeds.value.sort((feedA, feedB) => feedB.id.localeCompare(feedA.id))
       followingFeedsTotal.value = res.data.total
       followingFeedsPage.value++
     } else {
@@ -113,8 +129,48 @@ export const useFeedStore = defineStore('feed', () => {
     }
   }
 
+  const Get = async (id: string): Promise<Feed | null> => {
+    const feed = feeds.value.find((feed) => feed.id === id)
+    if (feed) {
+      return feed
+    }
+    const res = await getFeedByID(id)
+    if (res.code !== 200) {
+      console.error(`Failed to fetch feed details for ID ${id}: ${res.msg}`)
+      return null
+    }
+    const counter = await getFeedCounter(id)
+    if (counter.code !== 200) {
+      console.error(`Failed to fetch feed counter for ID ${id}: ${counter.msg}`)
+      return null
+    }
+    const user = await userStore.Get(res.data.feed.userID)
+    if (!user) {
+      console.error(`Failed to fetch user details for feed ID ${id}`)
+      return null
+    }
+    const formattedTime = computed(() => {
+      return formatDistanceToNow(new Date(res.data.feed.createTime), { addSuffix: true })
+    })
+    return {
+      ...res.data.feed,
+      type: 'recommended',
+      createTime: formattedTime.value,
+      likeCount: counter.data.likeCount,
+      commentCount: counter.data.commentCount,
+      viewCount: counter.data.viewCount,
+    }
+  }
+
+  const recommendedFeeds = computed(() => {
+    return feeds.value.filter((feed) => feed.type === 'recommended')
+  })
+
+  const followedFeeds = computed(() => {
+    return feeds.value.filter((feed) => feed.type === 'followed')
+  })
+
   return {
-    followingFeeds,
     feeds,
     followingFeedsPage,
     followingFeedsPageSize,
@@ -122,8 +178,10 @@ export const useFeedStore = defineStore('feed', () => {
     feedsPage,
     feedsPageSize,
     feedsTotal,
-
+    recommendedFeeds,
+    followedFeeds,
     feedLength,
+    Get,
     GetFollowingFeeds,
     GetFeeds,
   }

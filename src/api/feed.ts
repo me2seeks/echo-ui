@@ -13,6 +13,7 @@ import type {
   CreateFeedCommentResp,
   GetFollowingFeedsByPageReq,
   GetFollowingFeedsByPageResp,
+  GetFeedByIDResp,
 } from '@/types/feed'
 
 //@Summary get feed list by page
@@ -23,7 +24,7 @@ import type {
 //@Router /feed/{userID} [get]
 export const listFeedByUserID = (userID: string, data: GetFeedsByPageReq): Promise<ApiResponse<GetFeedsByPageResp>> => {
   return service({
-    url: `/feed/${userID}`,
+    url: `/feeds/${userID}`,
     method: 'get',
     params: data,
   })
@@ -108,8 +109,19 @@ export const listFollowingFeed = (
 // @Router /feed/ [get]
 export const listFeed = (data: GetFeedsByPageReq): Promise<ApiResponse<GetFeedsByPageResp>> => {
   return service({
-    url: '/feed/',
+    url: '/feeds/',
     method: 'get',
     params: data,
+  })
+}
+
+//@Summary get feed by feedID
+//@Produce application/json
+//@Param feedID path string true "Feed ID"
+//@Router /feed/{feedID} [get]
+export const getFeedByID = (feedID: string): Promise<ApiResponse<GetFeedByIDResp>> => {
+  return service({
+    url: `/feed/${feedID}`,
+    method: 'get',
   })
 }

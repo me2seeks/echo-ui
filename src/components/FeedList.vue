@@ -111,9 +111,9 @@
     event.stopPropagation()
     likeFeed(id).then((res) => {
       if (res.code == 200) {
-        const feed = feedStore.followingFeeds.find((feed) => feed.id == id)
+        const feed = feedStore.feeds.find((feed) => feed.id == id)
         if (feed) {
-          feed.isLiked = !feed?.isLiked
+          feed.isLiked = true
           feed.likeCount++
         }
       }
@@ -125,9 +125,9 @@
     console.log('Unliked', id)
     unlikeFeed(id).then((res) => {
       if (res.code == 200) {
-        const feed = feedStore.followingFeeds.find((feed) => feed.id == id)
+        const feed = feedStore.feeds.find((feed) => feed.id == id)
         if (feed) {
-          feed.isLiked = !feed?.isLiked
+          feed.isLiked = false
           feed.likeCount--
         }
       }

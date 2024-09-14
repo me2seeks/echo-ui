@@ -11,7 +11,7 @@
   const selectedTab = ref(true)
 
   const content = computed(() => {
-    return selectedTab.value ? feedStore.feeds : feedStore.followingFeeds
+    return selectedTab.value ? feedStore.recommendedFeeds : feedStore.followedFeeds
   })
 
   watch(

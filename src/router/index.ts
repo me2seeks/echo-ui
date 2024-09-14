@@ -51,6 +51,7 @@ const routes = [
       },
       {
         path: ':handle/status/:feedID',
+        name: 'status',
         component: StatusPage,
         props: true,
       },

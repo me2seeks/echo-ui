@@ -43,7 +43,10 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  const Get = async (id: string): Promise<User | null> => {
+  const Get = async (id: string | undefined): Promise<User | null> => {
+    if (!id) {
+      return null
+    }
     if (userMap.value.has(id)) {
       return userMap.value.get(id) || null
     } else {

@@ -70,3 +70,7 @@ export interface CreateFeedCommentReq {
 export interface CreateFeedCommentResp {
   id: string
 }
+
+export interface GetFeedByIDResp {
+  feed: Feed
+}
