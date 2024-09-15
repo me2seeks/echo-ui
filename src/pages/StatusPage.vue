@@ -13,13 +13,14 @@
   const userStore = useUserStore()
   const feedStore = useFeedStore()
   const mainStore = useMainStore()
-  const isOpen = ref(false)
-  const textarea = ref('')
-
   const fileList = ref<UploadUserFile[]>([])
   const mediaList = ref<string[]>([])
   const dialogImageUrl = ref('')
   const dialogVisible = ref(false)
+  const isOpen = ref(false)
+  const textarea = ref('')
+  const feedInfo = ref<Feed | null>(null)
+  let srcList = ref<string[]>([])
 
   const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
     dialogImageUrl.value = uploadFile.url!
@@ -101,8 +102,6 @@
     isOpen.value = true
   }
 
-  const feedInfo = ref<Feed | null>(null)
-
   const fetchFeeds = async () => {
     const feed = await feedStore.Get(props.feedID)
     if (feed) {
@@ -153,9 +152,15 @@
     console.log('Reported', id)
   }
 
-  onMounted(() => {
-    fetchFeeds()
-    fetchUserInfo()
+  onMounted(async () => {
+    await fetchFeeds()
+    await fetchUserInfo()
+    srcList.value = [
+      feedInfo.value?.media0,
+      feedInfo.value?.media1,
+      feedInfo.value?.media2 || 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+      feedInfo.value?.media3,
+    ].filter((src): src is string => !!src)
   })
 </script>
 <template>
@@ -175,7 +180,6 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
         </svg>
       </div>
-
       <div class="flex flex-col flex-1 justify-center my-2 text-inherit font-bold text-lg">Post</div>
     </div>
 
@@ -232,15 +236,51 @@
           </el-popover>
         </div>
         <p class="mt-1.5 text-base leading-none whitespace-pre-wrap">{{ feedInfo.content }}</p>
-        <figure
-          class="flex overflow-hidden flex-col justify-center p-px mt-3 w-full rounded-2xl border border-solid border-zinc-800"
-        >
-          <img
-            loading="lazy"
-            :src="feedInfo.media0"
-            alt="Mbappé in Real Madrid kit"
-            class="object-contain w-full aspect-[0.8]"
-          />
+        <figure class="grid grid-cols-2 gap-1 mt-3 w-full h-auto rounded-2xl border border-solid border-zinc-800">
+          <div v-if="feedInfo.media0" class="w-full h-full">
+            <el-image
+              :src="feedInfo.media0"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="srcList"
+              fit="cover"
+              class="w-full h-full rounded-2xl"
+            />
+          </div>
+          <div v-if="feedInfo.media1" class="w-full h-full">
+            <el-image
+              :src="feedInfo.media1"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="srcList"
+              fit="cover"
+              class="w-full h-full rounded-2xl"
+            />
+          </div>
+          <div v-if="feedInfo.media2" class="w-full h-full">
+            <el-image
+              :src="feedInfo.media2"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="srcList"
+              fit="cover"
+              class="w-full h-full rounded-2xl"
+            />
+          </div>
+          <div v-if="feedInfo.media3" class="w-full h-full">
+            <el-image
+              :src="feedInfo.media3"
+              :zoom-rate="1.2"
+              :max-scale="7"
+              :min-scale="0.2"
+              :preview-src-list="srcList"
+              fit="cover"
+              class="w-full h-full rounded-2xl"
+            />
+          </div>
         </figure>
       </section>
 
