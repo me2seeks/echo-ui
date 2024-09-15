@@ -9,6 +9,7 @@
   import { getPathWithoutQuery } from '@/utils/path'
   import { createComment } from '@/api/feed'
   import { likeFeed, unlikeFeed } from '@/api/interaction'
+  import router from '@/router'
 
   const userStore = useUserStore()
   const feedStore = useFeedStore()
@@ -96,9 +97,9 @@
     isOpen.value = false
   }
 
-  function openModal(id: string, event: Event) {
+  function openModal(event: Event) {
     event.stopPropagation()
-    // feedId.value = id
+
     isOpen.value = true
   }
 
@@ -120,8 +121,7 @@
     }
   }
 
-  function like(id: string, event: Event) {
-    event.stopPropagation()
+  function like(id: string) {
     likeFeed(id).then((res) => {
       if (res.code == 200) {
         const feed = feedStore.feeds.find((feed) => feed.id == id)
@@ -133,8 +133,7 @@
     })
   }
 
-  function unLike(id: string, event: Event) {
-    event.stopPropagation()
+  function unLike(id: string) {
     console.log('Unliked', id)
     unlikeFeed(id).then((res) => {
       if (res.code == 200) {
@@ -176,6 +175,7 @@
           stroke-width="1.5"
           stroke="currentColor"
           class="size-6"
+          @click="router.back()"
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
         </svg>
@@ -285,10 +285,7 @@
       </section>
 
       <footer class="flex flex-wrap gap-10 self-end mt-3.5 w-full max-w-[518px] max-md:max-w-full">
-        <div
-          class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500"
-          @click="openModal(feedInfo.id, $event)"
-        >
+        <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500" @click="openModal($event)">
           <div class="flex">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -434,7 +431,7 @@
         </div>
 
         <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-          <div v-show="!feedInfo.isLiked" class="flex" @click="like(feedInfo.id, $event)">
+          <div v-show="!feedInfo.isLiked" class="flex" @click="like(feedInfo.id)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -451,7 +448,7 @@
             </svg>
             <span class="my-auto pl-1">{{ feedInfo.likeCount }}</span>
           </div>
-          <div v-show="feedInfo.isLiked" class="flex" @click="unLike(feedInfo.id, $event)">
+          <div v-show="feedInfo.isLiked" class="flex" @click="unLike(feedInfo.id)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
               <path
                 d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"
