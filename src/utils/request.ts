@@ -14,13 +14,11 @@ service.interceptors.request.use((config) => {
   headers.set('Content-Type', 'application/json')
   headers.set('Authorization', `Bearer ${main.token}`)
   config.headers = headers
-  console.log(config)
   return config
 })
 
 service.interceptors.response.use(
   (response) => {
-    console.log(response)
     return response.data
   },
   (error) => {

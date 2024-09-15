@@ -31,17 +31,18 @@ export const useCommentStore = defineStore('comment', () => {
   const commentPage: Map<string, Page> = new Map()
   const userMapStore = useUserStore()
 
-  const Get = async (feedID: string) => {
+  const FetchComments = async (feedID: string) => {
     if (commentMap.value.has(feedID)) {
-      const detailedComments = await fetchComments(feedID, commentPage.get(feedID)!)
-      commentMap.value.get(feedID)?.push(...detailedComments)
-      commentPage.get(feedID)!.page += 1
+      const pageInfo = commentPage.get(feedID)!
+      await fetchComments(feedID, pageInfo).then(() => {
+        pageInfo.page += 1
+      })
     } else {
       const pageInfo = { page: 1, pageSize: 2, total: 999 }
       commentPage.set(feedID, pageInfo)
-      const detailedComments = await fetchComments(feedID, pageInfo)
-      commentMap.value.set(feedID, detailedComments)
-      pageInfo.page += 1
+      await fetchComments(feedID, pageInfo).then(() => {
+        pageInfo.page += 1
+      })
     }
   }
 
@@ -68,13 +69,25 @@ export const useCommentStore = defineStore('comment', () => {
           }
         })
       )
-      return detailedComments
+      console.log(detailedComments)
+      if (pageInfo.page > 1) {
+        console.log('append')
+        commentMap.value.get(feedID)?.push(...detailedComments)
+      } else {
+        console.log('set')
+        commentMap.value.set(feedID, detailedComments)
+      }
+      pageInfo.page += 1
     }
-    return []
+  }
+
+  const GetCommentsByFeedID = (feedID: string) => {
+    return computed(() => commentMap.value.get(feedID) || [])
   }
 
   return {
     commentMap,
-    Get,
+    FetchComments,
+    GetCommentsByFeedID,
   }
 })

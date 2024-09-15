@@ -27,6 +27,7 @@ export interface CreateCommentReq {
   media0: string | null
   media1: string | null
   media2: string | null
+  media3: string | null
 }
 
 export interface CreateCommentResp {

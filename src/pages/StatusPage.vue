@@ -508,6 +508,7 @@
         </div>
       </footer>
     </article>
+    <CommentList :feed-i-d="props.feedID" />
   </div>
 
   <div class="flex-1 w-full h-full">

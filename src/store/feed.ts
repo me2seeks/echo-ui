@@ -150,7 +150,7 @@ export const useFeedStore = defineStore('feed', () => {
       return null
     }
     const formattedTime = computed(() => {
-      return formatDistanceToNow(new Date(res.data.feed.createTime), { addSuffix: true })
+      return formatDistanceToNow(new Date(res.data.feed.createTime * 1000), { addSuffix: true })
     })
     return {
       ...res.data.feed,
