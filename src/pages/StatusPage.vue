@@ -41,9 +41,26 @@
       media1: mediaList.value[1] || '',
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
-    }).then(() => {
+    }).then((res) => {
+      if (res.code != 200) {
+        return
+      }
       if (feedInfo.value) {
         feedInfo.value.commentCount++
+        commentStore.commentMap.get(feedInfo.value?.id)?.unshift({
+          id: res.data.id,
+          userID: mainStore.userID,
+          content: textarea.value,
+          media0: mediaList.value[0] || '',
+          media1: mediaList.value[1] || '',
+          media2: mediaList.value[2] || '',
+          media3: mediaList.value[3] || '',
+          createTime: new Date().toISOString(),
+          likeCount: 0,
+          commentCount: 0,
+          viewCount: 0,
+          isLiked: false,
+        })
       }
 
       textarea.value = ''
