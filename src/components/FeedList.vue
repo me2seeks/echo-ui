@@ -136,7 +136,7 @@
 
   async function goToStatus(userID: string, feedID: string) {
     const user = await getUser(userID)
-    router.push(`/${user?.handle}}/status/${feedID}`)
+    router.push(`/${user?.handle}/status/${feedID}`)
   }
 </script>
 <template>

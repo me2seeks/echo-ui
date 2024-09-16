@@ -40,3 +40,10 @@ export interface DeleteCommentReq {
 }
 
 export interface DeleteCommentResp {}
+
+export interface GetCommentByIDReq {
+  commentID: string
+}
+export interface GetCommentByIDResp {
+  comment: Comment
+}

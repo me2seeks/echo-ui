@@ -144,11 +144,6 @@ export const useFeedStore = defineStore('feed', () => {
       console.error(`Failed to fetch feed counter for ID ${id}: ${counter.msg}`)
       return null
     }
-    const user = await userStore.Get(res.data.feed.userID)
-    if (!user) {
-      console.error(`Failed to fetch user details for feed ID ${id}`)
-      return null
-    }
     const formattedTime = computed(() => {
       return formatDistanceToNow(new Date(res.data.feed.createTime * 1000), { addSuffix: true })
     })

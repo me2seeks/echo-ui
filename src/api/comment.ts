@@ -6,6 +6,7 @@ import type {
   CreateCommentResp,
   DeleteCommentReq,
   DeleteCommentResp,
+  GetCommentByIDResp,
   GetCommentsByPageReq,
   GetCommentsByPageResp,
 } from '@/types/comment'
@@ -45,5 +46,16 @@ export const list = (commentID: string, data: GetCommentsByPageReq): Promise<Api
     url: `/comment/${commentID}`,
     method: 'get',
     params: data,
+  })
+}
+
+//@Summary get comment by ID
+//@Produce application/json
+//@Param commentID path string true "Comment ID"
+//@Router /comment/{commentID} [get]
+export const getCommentByID = (commentID: string): Promise<ApiResponse<GetCommentByIDResp>> => {
+  return service({
+    url: `/comment/${commentID}`,
+    method: 'get',
   })
 }

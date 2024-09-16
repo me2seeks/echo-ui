@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { useCommentStore } from '@/store/comment'
+  import { useCommentStore, type Comment } from '@/store/comment'
   import { likeComment, unlikeComment } from '@/api/interaction'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
   import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
@@ -10,6 +10,7 @@
   import { useUserStore } from '@/store/user'
   import { useMainStore } from '@/store/index'
   import { formatDistanceToNow } from 'date-fns'
+  import router from '@/router'
 
   const commentStore = useCommentStore()
   const userStore = useUserStore()
@@ -19,10 +20,12 @@
   const commentID = ref('')
 
   const props = defineProps<{
-    feedID: string
+    content: Comment[]
+    preFeedID?: string
+    preCommentID?: string
   }>()
 
-  const content = computed(() => commentStore.GetCommentsByFeedID(props.feedID).value)
+  // const content = computed(() => commentStore.GetCommentsByFeedID(props.feedID).value)
 
   function postComment() {
     create({
@@ -33,7 +36,7 @@
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
     }).then((res) => {
-      const comment = content.value.find((comment) => comment.id == commentID.value)
+      const comment = props.content.find((comment) => comment.id == commentID.value)
       if (comment) {
         comment.commentCount++
         const formattedTime = computed(() => {
@@ -125,7 +128,7 @@
     event.stopPropagation()
     likeComment(id).then((res) => {
       if (res.code == 200) {
-        const comment = content.value.find((comment) => comment.id == id)
+        const comment = props.content.find((comment) => comment.id == id)
         if (comment) {
           comment.isLiked = true
           comment.likeCount++
@@ -139,7 +142,7 @@
     console.log('Unliked', id)
     unlikeComment(id).then((res) => {
       if (res.code == 200) {
-        const comment = content.value.find((comment) => comment.id == id)
+        const comment = props.content.find((comment) => comment.id == id)
         if (comment) {
           comment.isLiked = false
           comment.likeCount--
@@ -148,16 +151,29 @@
     })
   }
 
-  onMounted(() => {
-    commentStore.FetchComments(props.feedID)
-    commentStore.FetchCommentComments('529993534380444686')
-  })
+  // async function getUser(id: string): Promise<User | undefined> {
+  //   const user = await userStore.Get(id)
+  //   return user ?? undefined
+  // }
+
+  function goToStatus(handle: string | undefined, id: string) {
+    router.push({
+      path: '/intermediate',
+      query: {
+        handle,
+        id,
+        feedID: props.preFeedID,
+        commentID: props.preCommentID,
+      },
+    })
+  }
 </script>
 <template>
   <article
     v-for="comment in content"
     :key="comment.id"
     class="flex overflow-hidden flex-col max-w-[568px] box-border py-3 px-4 border-b border-gray-700"
+    @click="goToStatus(userStore.userMap.get(comment.userID)?.handle, comment.id)"
   >
     <section class="flex flex-wrap gap-1.5 flex-col">
       <div class="flex flex-row grow shrink-0 items-start basis-0 w-fit max-md:max-w-full">

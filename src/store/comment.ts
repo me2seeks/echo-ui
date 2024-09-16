@@ -1,6 +1,6 @@
 /* eslint-disable security/detect-object-injection */
 import { listComment } from '@/api/feed'
-import { list } from '@/api/comment'
+import { list, getCommentByID } from '@/api/comment'
 import { getCommentCounter } from '@/api/counter'
 import { formatDistanceToNow } from 'date-fns'
 import { useUserStore } from '@/store/user'
@@ -34,6 +34,23 @@ export const useCommentStore = defineStore('comment', () => {
   const commentCommentMap: Ref<Map<string, Comment[]>> = ref(new Map())
   const commentCommentPage: Map<string, Page> = new Map()
   const userMapStore = useUserStore()
+
+  const Get = async (commentID: string) => {
+    const res = await getCommentByID(commentID)
+    const comment = res.data.comment
+    const counter = await getCommentCounter(comment.id)
+    const formattedTime = computed(() => {
+      return formatDistanceToNow(new Date(comment.createTime), { addSuffix: true })
+    })
+    await userMapStore.Set(comment.userID)
+    return {
+      ...comment,
+      createTime: formattedTime.value,
+      likeCount: counter.data.likeCount,
+      commentCount: counter.data.commentCount,
+      viewCount: counter.data.viewCount,
+    }
+  }
 
   const FetchCommentComments = async (commentID: string) => {
     if (commentCommentMap.value.has(commentID)) {
@@ -152,6 +169,7 @@ export const useCommentStore = defineStore('comment', () => {
   return {
     commentMap,
     commentCommentMap,
+    Get,
     FetchComments,
     FetchCommentComments,
     GetCommentsByFeedID,

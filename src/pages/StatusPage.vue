@@ -2,15 +2,51 @@
   import { useFeedStore, type Feed } from '@/store/feed'
   import { useUserStore, type User } from '@/store/user'
   import { useMainStore } from '@/store/index'
-  import { useCommentStore } from '@/store/comment'
+  import { useCommentStore, type Comment } from '@/store/comment'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
   import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
   import { fileType } from '@/types/upload'
   import { presign } from '@/api/upload'
   import { getPathWithoutQuery } from '@/utils/path'
   import { createComment } from '@/api/feed'
-  import { likeFeed, unlikeFeed } from '@/api/interaction'
+  import { create } from '@/api/comment'
+  import { likeFeed, unlikeFeed, likeComment, unlikeComment } from '@/api/interaction'
   import router from '@/router'
+  import { useRoute } from 'vue-router'
+
+  // 展示feed 的comment 时       路径为 /:handle/status/:id   id 为feedID
+  // 展示comment 的comment 时    路径为 /:handle/status/:id   id 为commentID query.feedID
+  let feedID: string
+  let commentID: string
+  let isComment: boolean
+  let isCommentComment: boolean
+  let isEitherTrue: boolean
+  let content: Comment[]
+
+  onMounted(async () => {
+    feedID = route.query.feedID as string | ''
+    commentID = route.query.commentID as string | ''
+    isComment = !!feedID
+    isCommentComment = !!commentID
+    isEitherTrue = isComment || isCommentComment
+
+    if (feedID || commentID) {
+      console.log('commentID', commentID)
+      await commentStore.FetchCommentComments(props.id)
+      content = commentStore.GetCommentCommentsByCommentID(props.id).value
+    } else {
+      console.log('feedID', feedID)
+      await commentStore.FetchComments(props.id)
+      content = commentStore.GetCommentsByFeedID(props.id).value
+    }
+
+    await fetchContent()
+    await fetchUserInfo()
+    window.addEventListener('scroll', handleScroll)
+    srcList.value = [info.value?.media0, info.value?.media1, info.value?.media2, info.value?.media3].filter(
+      (src): src is string => !!src
+    )
+  })
 
   const userStore = useUserStore()
   const feedStore = useFeedStore()
@@ -22,8 +58,14 @@
   const dialogVisible = ref(false)
   const isOpen = ref(false)
   const textarea = ref('')
-  const feedInfo = ref<Feed | null>(null)
+  const info = ref<Feed | Comment | null>(null)
   let srcList = ref<string[]>([])
+  const route = useRoute()
+
+  // const feedID = route.query.feedID as string | undefined
+  // const commentID = route.query.commentID as string | undefined
+  // const isComment = !!feedID
+  // const isCommentComment = !!commentID
 
   const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
     dialogImageUrl.value = uploadFile.url!
@@ -35,39 +77,77 @@
   })
 
   function postComment() {
-    createComment(feedInfo.value?.id || '', {
-      content: textarea.value,
-      media0: mediaList.value[0] || '',
-      media1: mediaList.value[1] || '',
-      media2: mediaList.value[2] || '',
-      media3: mediaList.value[3] || '',
-    }).then((res) => {
-      if (res.code != 200) {
-        return
-      }
-      if (feedInfo.value) {
-        feedInfo.value.commentCount++
-        commentStore.commentMap.get(feedInfo.value?.id)?.unshift({
-          id: res.data.id,
-          userID: mainStore.userID,
-          content: textarea.value,
-          media0: mediaList.value[0] || '',
-          media1: mediaList.value[1] || '',
-          media2: mediaList.value[2] || '',
-          media3: mediaList.value[3] || '',
-          createTime: new Date().toISOString(),
-          likeCount: 0,
-          commentCount: 0,
-          viewCount: 0,
-          isLiked: false,
-        })
-      }
+    if (isComment || isCommentComment) {
+      // 说明展示的是 comment
+      create({
+        commentID: info.value?.id || '',
+        content: textarea.value,
+        media0: mediaList.value[0] || '',
+        media1: mediaList.value[1] || '',
+        media2: mediaList.value[2] || '',
+        media3: mediaList.value[3] || '',
+      }).then((res) => {
+        if (res.code != 200) {
+          return
+        }
+        if (info.value) {
+          info.value.commentCount++
+          commentStore.commentCommentMap.get(info.value?.id)?.unshift({
+            id: res.data.id,
+            userID: mainStore.userID,
+            content: textarea.value,
+            media0: mediaList.value[0] || '',
+            media1: mediaList.value[1] || '',
+            media2: mediaList.value[2] || '',
+            media3: mediaList.value[3] || '',
+            createTime: new Date().toISOString(),
+            likeCount: 0,
+            commentCount: 0,
+            viewCount: 0,
+            isLiked: false,
+          })
+        }
 
-      textarea.value = ''
-      fileList.value = []
-      mediaList.value = []
-      closeModal()
-    })
+        textarea.value = ''
+        fileList.value = []
+        mediaList.value = []
+        closeModal()
+      })
+    } else {
+      createComment(info.value?.id || '', {
+        content: textarea.value,
+        media0: mediaList.value[0] || '',
+        media1: mediaList.value[1] || '',
+        media2: mediaList.value[2] || '',
+        media3: mediaList.value[3] || '',
+      }).then((res) => {
+        if (res.code != 200) {
+          return
+        }
+        if (info.value) {
+          info.value.commentCount++
+          commentStore.commentMap.get(info.value?.id)?.unshift({
+            id: res.data.id,
+            userID: mainStore.userID,
+            content: textarea.value,
+            media0: mediaList.value[0] || '',
+            media1: mediaList.value[1] || '',
+            media2: mediaList.value[2] || '',
+            media3: mediaList.value[3] || '',
+            createTime: new Date().toISOString(),
+            likeCount: 0,
+            commentCount: 0,
+            viewCount: 0,
+            isLiked: false,
+          })
+        }
+
+        textarea.value = ''
+        fileList.value = []
+        mediaList.value = []
+        closeModal()
+      })
+    }
   }
 
   const httpRequest: UploadProps['httpRequest'] = (
@@ -106,7 +186,7 @@
       type: String,
       required: true,
     },
-    feedID: {
+    id: {
       type: String,
       required: true,
     },
@@ -122,18 +202,25 @@
     isOpen.value = true
   }
 
-  const fetchFeeds = async () => {
-    const feed = await feedStore.Get(props.feedID)
-    if (feed) {
-      feedInfo.value = feed
+  const fetchContent = async () => {
+    if (isComment || isCommentComment) {
+      const comment = await commentStore.Get(props.id)
+      if (comment) {
+        info.value = comment
+      }
+    } else {
+      const feed = await feedStore.Get(props.id)
+      if (feed) {
+        info.value = feed
+      }
     }
   }
 
   const userInfo = ref<User | null>(null)
 
   const fetchUserInfo = async () => {
-    if (feedInfo.value?.userID) {
-      const user = await userStore.Get(feedInfo.value.userID)
+    if (info.value?.userID) {
+      const user = await userStore.Get(info.value.userID)
       if (user) {
         userInfo.value = user
       }
@@ -141,28 +228,73 @@
   }
 
   function like(id: string) {
-    likeFeed(id).then((res) => {
-      if (res.code == 200) {
-        const feed = feedStore.feeds.find((feed) => feed.id == id)
-        if (feed) {
-          feed.isLiked = true
-          feed.likeCount++
+    console.log('Liked', id)
+    if (isComment) {
+      likeComment(id).then((res) => {
+        if (res.code == 200) {
+          const comment = commentStore.commentMap.get(feedID)?.find((comment) => comment.id == id)
+          if (comment) {
+            comment.isLiked = true
+            comment.likeCount++
+          }
         }
-      }
-    })
+      })
+    } else if (isCommentComment) {
+      likeComment(id).then((res) => {
+        if (res.code == 200) {
+          const comment = commentStore.commentCommentMap.get(commentID)?.find((comment) => comment.id == id)
+          if (comment) {
+            comment.isLiked = true
+            comment.likeCount++
+          }
+        }
+      })
+    } else {
+      likeFeed(id).then((res) => {
+        if (res.code == 200) {
+          const feed = feedStore.feeds.find((feed) => feed.id == id)
+          if (feed) {
+            feed.isLiked = true
+            feed.likeCount++
+          }
+        }
+      })
+    }
   }
 
   function unLike(id: string) {
     console.log('Unliked', id)
-    unlikeFeed(id).then((res) => {
-      if (res.code == 200) {
-        const feed = feedStore.feeds.find((feed) => feed.id == id)
-        if (feed) {
-          feed.isLiked = false
-          feed.likeCount--
+    if (isComment) {
+      unlikeComment(id).then((res) => {
+        if (res.code == 200) {
+          const comment = commentStore.commentMap.get(feedID)?.find((comment) => comment.id == id)
+          if (comment) {
+            comment.isLiked = false
+            comment.likeCount--
+          }
         }
-      }
-    })
+      })
+    } else if (isCommentComment) {
+      unlikeComment(id).then((res) => {
+        if (res.code == 200) {
+          const comment = commentStore.commentCommentMap.get(commentID)?.find((comment) => comment.id == id)
+          if (comment) {
+            comment.isLiked = false
+            comment.likeCount--
+          }
+        }
+      })
+    } else {
+      unlikeFeed(id).then((res) => {
+        if (res.code == 200) {
+          const feed = feedStore.feeds.find((feed) => feed.id == id)
+          if (feed) {
+            feed.isLiked = false
+            feed.likeCount--
+          }
+        }
+      })
+    }
   }
 
   function report(id: string, event: Event) {
@@ -174,26 +306,20 @@
     console.log('scroll')
     const bottomOfWindow = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1
     if (bottomOfWindow) {
-      console.log('fetch')
-      commentStore.FetchComments(props.feedID)
+      if (isComment || isCommentComment) {
+        commentStore.FetchCommentComments(props.id)
+      } else {
+        commentStore.FetchComments(props.id)
+      }
     }
   }
-
-  onMounted(async () => {
-    await fetchFeeds()
-    await fetchUserInfo()
-    window.addEventListener('scroll', handleScroll)
-    srcList.value = [
-      feedInfo.value?.media0,
-      feedInfo.value?.media1,
-      feedInfo.value?.media2 || 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-      feedInfo.value?.media3,
-    ].filter((src): src is string => !!src)
-  })
 
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
   })
+  // 1、 path   feedID  用来展示feed  comments 展示时需要
+  // 2、  path  commentID  query 为feedID 用来展示feed 下的comment   isComment
+  // 3、  path  commentID  query 为commentID 用来展示comment 下的comment  isCommentComment
 </script>
 <template>
   <div class="flex flex-col z-1 flex-grow max-w-[566px] h-full border-r border-gray-700">
@@ -218,7 +344,7 @@
 
     <!-- feed -->
     <article
-      v-if="feedInfo"
+      v-if="info"
       class="flex overflow-hidden flex-col max-w-[568px] box-border py-3 px-4 border-b border-gray-700"
     >
       <section class="flex flex-wrap gap-1.5 flex-col">
@@ -240,7 +366,7 @@
                     <span class="text-sm font-bold">{{ userInfo.nickname }}</span>
                     <span class="text-xs text-zinc-500">{{ userInfo.handle }}</span>
                     <span class="text-xs text-zinc-500">·</span>
-                    <span class="text-xs text-zinc-500">{{ feedInfo.createTime }}</span>
+                    <span class="text-xs text-zinc-500">{{ info.createTime }}</span>
                   </div>
                 </div>
               </div>
@@ -249,30 +375,30 @@
               <div class="flex flex-col gap-4">
                 <div class="avatar">
                   <div class="w-12 rounded-full">
-                    <img :src="userStore.userMap.get(feedInfo.userID)?.avatar" />
+                    <img :src="userStore.userMap.get(info.userID)?.avatar" />
                   </div>
                 </div>
                 <div>
                   <p class="mr-0 font-medium">
-                    {{ userStore.userMap.get(feedInfo.userID)?.nickname }}
+                    {{ userStore.userMap.get(info.userID)?.nickname }}
                   </p>
                   <p class="mr-0 text-xs" style="margin: 0; font-size: 14px; color: var(--el-color-info)">
-                    @{{ userStore.userMap.get(feedInfo.userID)?.handle }}
+                    @{{ userStore.userMap.get(info.userID)?.handle }}
                   </p>
                 </div>
                 <p class="demo-rich-content__desc" style="margin: 0">
-                  {{ userStore.userMap.get(feedInfo.userID)?.bio }}
+                  {{ userStore.userMap.get(info.userID)?.bio }}
                 </p>
-                <FollowBtn :user-id="feedInfo.userID" :is-follow="userStore.userMap.get(feedInfo.userID)?.isFollow" />
+                <FollowBtn :user-id="info.userID" :is-follow="userStore.userMap.get(info.userID)?.isFollow" />
               </div>
             </template>
           </el-popover>
         </div>
-        <p class="mt-1.5 text-base leading-none whitespace-pre-wrap">{{ feedInfo.content }}</p>
+        <p class="mt-1.5 text-base leading-none whitespace-pre-wrap">{{ info.content }}</p>
         <figure class="grid grid-cols-2 gap-1 mt-3 w-full h-auto rounded-2xl border border-solid border-zinc-800">
-          <div v-if="feedInfo.media0" class="w-full h-full">
+          <div v-if="info.media0" class="w-full h-full">
             <el-image
-              :src="feedInfo.media0"
+              :src="info.media0"
               :zoom-rate="1.2"
               :max-scale="7"
               :min-scale="0.2"
@@ -281,9 +407,9 @@
               class="w-full h-full rounded-2xl"
             />
           </div>
-          <div v-if="feedInfo.media1" class="w-full h-full">
+          <div v-if="info.media1" class="w-full h-full">
             <el-image
-              :src="feedInfo.media1"
+              :src="info.media1"
               :zoom-rate="1.2"
               :max-scale="7"
               :min-scale="0.2"
@@ -292,9 +418,9 @@
               class="w-full h-full rounded-2xl"
             />
           </div>
-          <div v-if="feedInfo.media2" class="w-full h-full">
+          <div v-if="info.media2" class="w-full h-full">
             <el-image
-              :src="feedInfo.media2"
+              :src="info.media2"
               :zoom-rate="1.2"
               :max-scale="7"
               :min-scale="0.2"
@@ -303,9 +429,9 @@
               class="w-full h-full rounded-2xl"
             />
           </div>
-          <div v-if="feedInfo.media3" class="w-full h-full">
+          <div v-if="info.media3" class="w-full h-full">
             <el-image
-              :src="feedInfo.media3"
+              :src="info.media3"
               :zoom-rate="1.2"
               :max-scale="7"
               :min-scale="0.2"
@@ -334,7 +460,7 @@
                 d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
               />
             </svg>
-            <span class="my-auto pl-1">{{ feedInfo.commentCount }}</span>
+            <span class="my-auto pl-1">{{ info.commentCount }}</span>
           </div>
         </div>
         <TransitionRoot appear :show="isOpen" as="template">
@@ -441,7 +567,7 @@
 
         <div
           class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500"
-          @click="report(feedInfo.id, $event)"
+          @click="report(info.id, $event)"
         >
           <div class="flex">
             <svg
@@ -464,7 +590,7 @@
         </div>
 
         <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
-          <div v-show="!feedInfo.isLiked" class="flex" @click="like(feedInfo.id)">
+          <div v-show="!info.isLiked" class="flex" @click="like(info.id)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -479,15 +605,15 @@
                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
               />
             </svg>
-            <span class="my-auto pl-1">{{ feedInfo.likeCount }}</span>
+            <span class="my-auto pl-1">{{ info.likeCount }}</span>
           </div>
-          <div v-show="feedInfo.isLiked" class="flex" @click="unLike(feedInfo.id)">
+          <div v-show="info.isLiked" class="flex" @click="unLike(info.id)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
               <path
                 d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"
               />
             </svg>
-            <span class="my-auto pl-1">{{ feedInfo.likeCount }}</span>
+            <span class="my-auto pl-1">{{ info.likeCount }}</span>
           </div>
         </div>
         <div class="flex flex-1 gap-1 text-sm leading-none whitespace-nowrap text-zinc-500">
@@ -506,7 +632,7 @@
             />
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
           </svg>
-          <span class="my-auto pl-1">{{ feedInfo.viewCount }}</span>
+          <span class="my-auto pl-1">{{ info.viewCount }}</span>
         </div>
         <div class="flex flex-1 gap-3">
           <svg
@@ -541,7 +667,8 @@
         </div>
       </footer>
     </article>
-    <CommentList :feed-i-d="props.feedID" />
+    <CommentList v-if="isEitherTrue" :content="content" :pre-comment-i-d="info?.id" />
+    <CommentList v-else :content="content" :pre-feed-i-d="info?.id" />
   </div>
 
   <div class="flex-1 w-full h-full">

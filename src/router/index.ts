@@ -9,6 +9,7 @@ import ExplorePage from '@/pages/ExplorePage.vue'
 import MessagesPage from '@/pages/MessagesPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
 import StatusPage from '@/pages/StatusPage.vue'
+import IntermediatePage from '@/pages/IntermediatePage.vue'
 
 const routes = [
   {
@@ -50,7 +51,7 @@ const routes = [
         },
       },
       {
-        path: ':handle/status/:feedID',
+        path: ':handle/status/:id',
         name: 'status',
         component: StatusPage,
         props: true,
@@ -72,6 +73,10 @@ const routes = [
     meta: {
       title: 'Login',
     },
+  },
+  {
+    path: '/intermediate',
+    component: IntermediatePage,
   },
 ]
 
