@@ -2,6 +2,7 @@
   import { useFeedStore, type Feed } from '@/store/feed'
   import { useUserStore, type User } from '@/store/user'
   import { useMainStore } from '@/store/index'
+  import { useCommentStore } from '@/store/comment'
   import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
   import type { UploadProps, UploadUserFile, UploadRequestOptions } from 'element-plus'
   import { fileType } from '@/types/upload'
@@ -14,6 +15,7 @@
   const userStore = useUserStore()
   const feedStore = useFeedStore()
   const mainStore = useMainStore()
+  const commentStore = useCommentStore()
   const fileList = ref<UploadUserFile[]>([])
   const mediaList = ref<string[]>([])
   const dialogImageUrl = ref('')
@@ -151,15 +153,29 @@
     console.log('Reported', id)
   }
 
+  const handleScroll = () => {
+    console.log('scroll')
+    const bottomOfWindow = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 1
+    if (bottomOfWindow) {
+      console.log('fetch')
+      commentStore.FetchComments(props.feedID)
+    }
+  }
+
   onMounted(async () => {
     await fetchFeeds()
     await fetchUserInfo()
+    window.addEventListener('scroll', handleScroll)
     srcList.value = [
       feedInfo.value?.media0,
       feedInfo.value?.media1,
       feedInfo.value?.media2 || 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
       feedInfo.value?.media3,
     ].filter((src): src is string => !!src)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
   })
 </script>
 <template>

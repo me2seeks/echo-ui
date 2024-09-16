@@ -31,13 +31,13 @@ export const useFeedStore = defineStore('feed', () => {
   const feedsPageSize: Ref<number> = ref(1)
   const feedsTotal: Ref<number> = ref(999)
 
-  const feedLength: Ref<number> = ref(0)
-  const followingFeedLength: Ref<number> = ref(0)
+  const feedLen: Ref<number> = ref(0)
+  const followingFeedLen: Ref<number> = ref(0)
 
   const userStore = useUserStore()
 
   const GetFeeds = async () => {
-    console.log('feeds:', feedLength.value, feedsTotal.value)
+    console.log('feeds:', feedLen.value, feedsTotal.value)
     if (feeds.value.length >= feedsTotal.value) {
       console.log('No more feeds to fetch')
       return
@@ -68,7 +68,7 @@ export const useFeedStore = defineStore('feed', () => {
           }
         })
       )
-      feedLength.value += detailedFeeds.length
+      feedLen.value += detailedFeeds.length
       feeds.value.push(...detailedFeeds)
       feeds.value.sort((feedA, feedB) => feedB.id.localeCompare(feedA.id))
       feedsTotal.value = res.data.total
@@ -79,8 +79,8 @@ export const useFeedStore = defineStore('feed', () => {
   }
 
   const GetFollowingFeeds = async () => {
-    console.log('followingFeeds:', followingFeedLength.value, followingFeedsTotal.value)
-    if (followingFeedLength.value >= followingFeedsTotal.value) {
+    console.log('followingFeeds:', followingFeedLen.value, followingFeedsTotal.value)
+    if (followingFeedLen.value >= followingFeedsTotal.value) {
       console.log('No more following feeds to fetch')
       return
     }
@@ -119,7 +119,7 @@ export const useFeedStore = defineStore('feed', () => {
         }
       })
 
-      followingFeedLength.value += detailedFeeds.length
+      followingFeedLen.value += detailedFeeds.length
       feeds.value.push(...detailedFeeds)
       feeds.value.sort((feedA, feedB) => feedB.id.localeCompare(feedA.id))
       followingFeedsTotal.value = res.data.total
@@ -180,7 +180,7 @@ export const useFeedStore = defineStore('feed', () => {
     feedsTotal,
     recommendedFeeds,
     followedFeeds,
-    feedLength,
+    feedLen,
     Get,
     GetFollowingFeeds,
     GetFeeds,

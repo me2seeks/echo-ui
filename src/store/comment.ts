@@ -24,6 +24,7 @@ interface Page {
   page: number
   pageSize: number
   total: number
+  len: number
 }
 
 export const useCommentStore = defineStore('comment', () => {
@@ -34,11 +35,15 @@ export const useCommentStore = defineStore('comment', () => {
   const FetchComments = async (feedID: string) => {
     if (commentMap.value.has(feedID)) {
       const pageInfo = commentPage.get(feedID)!
+
+      if (pageInfo.len >= pageInfo.total) {
+        return
+      }
       await fetchComments(feedID, pageInfo).then(() => {
         pageInfo.page += 1
       })
     } else {
-      const pageInfo = { page: 1, pageSize: 2, total: 999 }
+      const pageInfo = { page: 1, pageSize: 2, total: 999, len: 0 }
       commentPage.set(feedID, pageInfo)
       await fetchComments(feedID, pageInfo).then(() => {
         pageInfo.page += 1
@@ -48,6 +53,7 @@ export const useCommentStore = defineStore('comment', () => {
 
   const fetchComments = async (feedID: string, pageInfo: Page) => {
     const res = await listComment(feedID, pageInfo)
+
     if (Array.isArray(res.data.comments)) {
       const comments = res.data.comments.map((comment: any) => ({
         ...comment,
@@ -69,15 +75,13 @@ export const useCommentStore = defineStore('comment', () => {
           }
         })
       )
-      console.log(detailedComments)
+      pageInfo.len += detailedComments.length
+      pageInfo.total = res.data.total
       if (pageInfo.page > 1) {
-        console.log('append')
         commentMap.value.get(feedID)?.push(...detailedComments)
       } else {
-        console.log('set')
         commentMap.value.set(feedID, detailedComments)
       }
-      pageInfo.page += 1
     }
   }
 
