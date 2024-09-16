@@ -9,6 +9,7 @@
   import { getPathWithoutQuery } from '@/utils/path'
   import { useUserStore } from '@/store/user'
   import { useMainStore } from '@/store/index'
+  import { formatDistanceToNow } from 'date-fns'
 
   const commentStore = useCommentStore()
   const userStore = useUserStore()
@@ -31,10 +32,27 @@
       media1: mediaList.value[1] || '',
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
-    }).then(() => {
+    }).then((res) => {
       const comment = content.value.find((comment) => comment.id == commentID.value)
       if (comment) {
         comment.commentCount++
+        const formattedTime = computed(() => {
+          return formatDistanceToNow(new Date(), { addSuffix: true })
+        })
+        commentStore.commentCommentMap.get(commentID.value)?.unshift({
+          id: res.data.id,
+          userID: mainStore.userID,
+          content: textarea.value,
+          media0: mediaList.value[0] || '',
+          media1: mediaList.value[1] || '',
+          media2: mediaList.value[2] || '',
+          media3: mediaList.value[3] || '',
+          createTime: formattedTime.value,
+          likeCount: 0,
+          commentCount: 0,
+          viewCount: 0,
+          isLiked: false,
+        })
       }
       textarea.value = ''
       fileList.value = []
@@ -132,6 +150,7 @@
 
   onMounted(() => {
     commentStore.FetchComments(props.feedID)
+    commentStore.FetchCommentComments('529993534380444686')
   })
 </script>
 <template>

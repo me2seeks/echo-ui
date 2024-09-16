@@ -151,6 +151,7 @@ export const useCommentStore = defineStore('comment', () => {
 
   return {
     commentMap,
+    commentCommentMap,
     FetchComments,
     FetchCommentComments,
     GetCommentsByFeedID,

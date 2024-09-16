@@ -8,8 +8,12 @@
   import { useMainStore } from '@/store/index'
   import { useUserStore, type User } from '@/store/user'
   import type { Gender } from '@/types/user'
+  import { useFeedStore } from '@/store/feed'
+  import { formatDistanceToNow } from 'date-fns'
 
   const userStore = useUserStore()
+  const feedStore = useFeedStore()
+  const userID = useMainStore().userID
 
   const userInfo: Ref<User> = ref({
     handle: '',
@@ -26,7 +30,7 @@
 
   onMounted(() => {
     if (!userInfo.value) {
-      userStore.Get(useMainStore().userID).then((user: User | null) => {
+      userStore.Get(userID).then((user: User | null) => {
         if (user) {
           userInfo.value = user
         }
@@ -42,7 +46,26 @@
       media1: mediaList.value[1] || '',
       media2: mediaList.value[2] || '',
       media3: mediaList.value[3] || '',
-    }).then(() => {
+    }).then((res) => {
+      const formattedTime = computed(() => {
+        return formatDistanceToNow(new Date(), { addSuffix: true })
+      })
+      feedStore.feeds.unshift({
+        id: res.data.id,
+        content: textarea.value,
+        media0: mediaList.value[0] || '',
+        media1: mediaList.value[1] || '',
+        media2: mediaList.value[2] || '',
+        media3: mediaList.value[3] || '',
+        userID: userID,
+        likeCount: 0,
+        commentCount: 0,
+        isLiked: false,
+        createTime: formattedTime.value,
+        viewCount: 0,
+        type: 'recommended',
+      })
+
       userInfo.value.feedCount++
       textarea.value = ''
       fileList.value = []
