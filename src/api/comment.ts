@@ -40,10 +40,10 @@ export const del = (data: DeleteCommentReq): Promise<ApiResponse<DeleteCommentRe
 //@Param commentID path string true "Comment ID"
 //@Param page query int32 true "Page number"
 //@Param page_size query int32 true "Page size"
-//@Router /comment/{commentID} [get]
+//@Router /comments/{commentID} [get]
 export const list = (commentID: string, data: GetCommentsByPageReq): Promise<ApiResponse<GetCommentsByPageResp>> => {
   return service({
-    url: `/comment/${commentID}`,
+    url: `/comments/${commentID}`,
     method: 'get',
     params: data,
   })
