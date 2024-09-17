@@ -10,6 +10,7 @@ import MessagesPage from '@/pages/MessagesPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
 import StatusPage from '@/pages/StatusPage.vue'
 import IntermediatePage from '@/pages/IntermediatePage.vue'
+import StreamPage from '@/pages/StreamPage.vue'
 
 const routes = [
   {
@@ -58,7 +59,10 @@ const routes = [
       },
     ],
   },
-
+  {
+    path: '/stream',
+    component: StreamPage,
+  },
   {
     path: '/demo/',
     component: DemoPage,
