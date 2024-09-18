@@ -11,6 +11,8 @@ import ProfilePage from '@/pages/ProfilePage.vue'
 import StatusPage from '@/pages/StatusPage.vue'
 import IntermediatePage from '@/pages/IntermediatePage.vue'
 import StreamPage from '@/pages/StreamPage.vue'
+import ViewerPage from '@/pages/ViewerPage.vue'
+import BroadcasterPage from '@/pages/BroadcasterPage.vue'
 
 const routes = [
   {
@@ -64,6 +66,14 @@ const routes = [
     component: StreamPage,
   },
   {
+    path: '/broadcaster',
+    component: BroadcasterPage,
+  },
+  {
+    path: '/viewer',
+    component: ViewerPage,
+  },
+  {
     path: '/demo/',
     component: DemoPage,
     meta: {
@@ -94,6 +104,7 @@ router.beforeEach((to, from, next) => {
   if (to.path === '/login' && mainStore.isLoggedIn) {
     next({ path: '/', replace: true })
   } else if (to.path !== '/login' && !mainStore.isLoggedIn) {
+    mainStore.redirectPath = to.path
     next({ path: '/login', replace: true })
   } else {
     next()

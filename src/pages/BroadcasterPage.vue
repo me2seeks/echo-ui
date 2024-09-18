@@ -40,20 +40,24 @@
       ],
     })
 
-    pc.ontrack = function (event: RTCTrackEvent): void {
-      const el = document.createElement(event.track.kind) as HTMLMediaElement
-      el.srcObject = event.streams[0]
-      el.autoplay = true
-      el.controls = true
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        const videoElement = document.getElementById('video1') as HTMLVideoElement
+        if (videoElement) {
+          videoElement.srcObject = stream
+        }
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream))
 
-      const remoteVideos = document.getElementById('remoteVideos')
-      if (remoteVideos) {
-        remoteVideos.appendChild(el)
-      }
-    }
+        pc.createOffer()
+          .then((sd) => pc.setLocalDescription(sd))
+          .catch(log)
+      })
+      .catch(log)
 
-    pc.oniceconnectionstatechange = (): void => log(pc.iceConnectionState)
-    pc.onicecandidate = (event: RTCPeerConnectionIceEvent): void => {
+    pc.oniceconnectionstatechange = () => log(pc.iceConnectionState)
+
+    pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       if (event.candidate === null) {
         const localSessionDescription = document.getElementById('localSessionDescription') as HTMLInputElement
         if (localSessionDescription) {
@@ -61,51 +65,35 @@
         }
       }
     }
-
-    // Offer to receive 1 audio, and 1 video track
-    pc.addTransceiver('video', { direction: 'sendrecv' })
-    pc.addTransceiver('audio', { direction: 'sendrecv' })
-
-    pc.createOffer()
-      .then((sd: RTCSessionDescriptionInit) => pc.setLocalDescription(sd))
-      .catch(log)
   })
 
   function startSession() {
-    const sd = (document.getElementById('remoteSessionDescription') as HTMLInputElement).value
-    if (sd === '') {
-      return alert('Session Description must not be empty')
-    }
+    const remoteSessionDescription = document.getElementById('remoteSessionDescription') as HTMLInputElement
+    if (remoteSessionDescription) {
+      const sd = remoteSessionDescription.value
+      if (sd === '') {
+        return alert('Session Description must not be empty')
+      }
 
-    try {
-      pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(sd))))
-    } catch (err) {
-      alert(err)
+      try {
+        pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(sd))))
+      } catch (err) {
+        alert(err)
+      }
     }
   }
 </script>
 
 <template>
-  Browser base64 Session Description
+  <video id="video1" width="160" height="120" autoplay muted></video>
   <br />
+  Browser base64 Session Description
   <textarea id="localSessionDescription" readonly="true"></textarea>
   <br />
-
-  Golang base64 Session Description
-  <br />
+  Golang base64 Session Description:
   <textarea id="remoteSessionDescription"></textarea>
   <br />
   <button @click="startSession">Start Session</button>
-  <br />
 
-  <br />
-
-  Video
-  <br />
-  <div id="remoteVideos"></div>
-  <br />
-
-  Logs
-  <br />
-  <div id="div"></div>
+  <div id="logs"></div>
 </template>
