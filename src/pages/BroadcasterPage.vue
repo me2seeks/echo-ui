@@ -1,99 +1,125 @@
 <script setup lang="ts">
-  const GEO_LOC_URL = 'https://raw.githubusercontent.com/pradt2/always-online-stun/master/geoip_cache.txt'
-  const IPV4_URL = 'https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_ipv4s.txt'
-  const GEO_USER_URL = 'https://geolocation-db.com/json/'
+  import { type WSMessage } from '@/types/webrtc'
 
-  let pc: RTCPeerConnection
-  let closestAddr: string
+  const status = ref<string>('未连接')
+  const message = ref<WSMessage | null>(null)
+  const error = ref<string | null>(null)
 
-  async function fetchClosestStunServer() {
-    const geoLocs: Record<string, [number, number]> = await (await fetch(GEO_LOC_URL)).json()
-    const { latitude, longitude }: { latitude: number; longitude: number } = await (await fetch(GEO_USER_URL)).json()
-    const ipv4Text: string = await (await fetch(IPV4_URL)).text()
-    closestAddr = ipv4Text
-      .trim()
-      .split('\n')
-      .map((addr) => {
-        const geoLoc = geoLocs[addr.split(':')[0]]
-        if (!geoLoc) return [addr, Infinity] as [string, number] // 如果 geoLoc 不存在，返回一个无限大的距离
-        const [stunLat, stunLon] = geoLoc
-        const dist = Math.sqrt((latitude - stunLat) ** 2 + (longitude - stunLon) ** 2)
-        return [addr, dist] as [string, number]
-      })
-      .reduce(([addrA, distA], [addrB, distB]) => (distA <= distB ? [addrA, distA] : [addrB, distB]))[0]
+  let ws: WebSocket | null = null
+  let pc: RTCPeerConnection = new RTCPeerConnection({
+    iceServers: [
+      {
+        urls: `stun:stun.syncthing.net:3478`,
+      },
+    ],
+  })
+
+  connectWebSocket()
+  pc = new RTCPeerConnection({
+    iceServers: [
+      {
+        urls: `stun:stun.syncthing.net:3478`,
+      },
+    ],
+  })
+
+  navigator.mediaDevices
+    .getUserMedia({ video: true, audio: true })
+    .then((stream) => {
+      const videoElement = document.querySelector('video') as HTMLVideoElement | null
+      if (videoElement) {
+        videoElement.srcObject = stream
+      } else {
+        console.error('视频元素未找到')
+      }
+      stream.getTracks().forEach((track) => pc.addTrack(track, stream))
+    })
+    .catch((err) => {
+      console.error('获取媒体流失败:', err)
+    })
+
+  // pc.addTransceiver('video', { direction: 'sendrecv' })
+  // pc.addTransceiver('audio', { direction: 'sendrecv' })
+
+  pc.ondatachannel = (event: RTCDataChannelEvent): void => {
+    console.log('Data Channel:', event.channel)
   }
 
-  let log = (msg: string): void => {
-    const div = document.getElementById('div')
-    if (div) {
-      div.innerHTML += msg + '<br>'
+  pc.onconnectionstatechange = (): void => {
+    console.log('Connection State:', pc.connectionState)
+  }
+
+  pc.oniceconnectionstatechange = (): void => {
+    console.log('ICE Connection State:', pc.iceConnectionState)
+  }
+
+  pc.onicecandidateerror = (event: RTCPeerConnectionIceErrorEvent): void => {
+    console.error('ICE 候选者错误:', event.errorText)
+  }
+
+  pc.onicecandidate = (event: RTCPeerConnectionIceEvent): void => {
+    if (event.candidate === null && ws && ws.readyState === ws.OPEN) {
+      ws.send(JSON.stringify({ event: 'webrtc', payload: pc.localDescription }))
     }
   }
 
-  onMounted(async () => {
-    await fetchClosestStunServer()
-    pc = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: `stun:${closestAddr}`,
-        },
-      ],
+  pc.createOffer()
+    .then((sdp) => pc.setLocalDescription(sdp))
+    .catch((err) => {
+      error.value = '创建 offer 失败: ' + err
     })
 
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        const videoElement = document.getElementById('video1') as HTMLVideoElement
-        if (videoElement) {
-          videoElement.srcObject = stream
-        }
-        stream.getTracks().forEach((track) => pc.addTrack(track, stream))
-
-        pc.createOffer()
-          .then((sd) => pc.setLocalDescription(sd))
-          .catch(log)
-      })
-      .catch(log)
-
-    pc.oniceconnectionstatechange = () => log(pc.iceConnectionState)
-
-    pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-      if (event.candidate === null) {
-        const localSessionDescription = document.getElementById('localSessionDescription') as HTMLInputElement
-        if (localSessionDescription) {
-          localSessionDescription.value = btoa(JSON.stringify(pc.localDescription))
-        }
-      }
+  onBeforeUnmount(() => {
+    if (ws) {
+      ws.close()
     }
   })
 
-  function startSession() {
-    const remoteSessionDescription = document.getElementById('remoteSessionDescription') as HTMLInputElement
-    if (remoteSessionDescription) {
-      const sd = remoteSessionDescription.value
-      if (sd === '') {
-        return alert('Session Description must not be empty')
-      }
+  function connectWebSocket() {
+    ws = new WebSocket('ws://localhost:8080/ws/viewer')
 
+    ws.onopen = () => {
+      status.value = '已连接'
+    }
+
+    ws.onmessage = (event) => {
       try {
-        pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(sd))))
+        const data: WSMessage = JSON.parse(event.data)
+        message.value = data
+        handleMessage(data)
       } catch (err) {
-        alert(err)
+        error.value = '消息解析错误: ' + (err as Error).message
       }
+    }
+
+    ws.onerror = (event) => {
+      error.value = 'WebSocket 错误: ' + (event as ErrorEvent).message
+    }
+
+    ws.onclose = () => {
+      status.value = '连接已关闭'
+    }
+  }
+
+  const handleMessage = (data: WSMessage) => {
+    switch (data.event) {
+      case 'webrtc':
+        console.log('webrtc', data.payload)
+        pc.setRemoteDescription(new RTCSessionDescription(data.payload as RTCSessionDescriptionInit)).catch((err) => {
+          error.value = '设置远程描述失败: ' + err
+        })
+        break
+      case 'candidate':
+        pc.addIceCandidate(new RTCIceCandidate(data.payload as RTCIceCandidateInit))
+        break
+      default:
+        console.log('未知事件:', data.event)
     }
   }
 </script>
 
 <template>
-  <video id="video1" width="160" height="120" autoplay muted></video>
+  <video id="video1" autoplay muted></video>
   <br />
-  Browser base64 Session Description
-  <textarea id="localSessionDescription" readonly="true"></textarea>
-  <br />
-  Golang base64 Session Description:
-  <textarea id="remoteSessionDescription"></textarea>
-  <br />
-  <button @click="startSession">Start Session</button>
-
-  <div id="logs"></div>
+  <div>error: {{ error }}</div>
 </template>
